@@ -195,6 +195,18 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
                 </div>
               </div>
 
+              <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="dataVistoria">Data da Vistoria</Label>
+                  <Input 
+                    id="dataVistoria" 
+                    type="date"
+                    value={formData.dataVistoria || ''} 
+                    onChange={(e) => handleChange('dataVistoria', e.target.value)}
+                  />
+                </div>
+              </div>
+
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="marca">Marca</Label>

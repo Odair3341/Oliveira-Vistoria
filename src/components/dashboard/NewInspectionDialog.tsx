@@ -41,6 +41,7 @@ export function NewInspectionDialog() {
   const [selectedEmpresa, setSelectedEmpresa] = useState<string>('');
   const [selectedFilial, setSelectedFilial] = useState<string>('');
   const [trajeto, setTrajeto] = useState<string>(''); // Naviraí a XXX
+  const [dataVistoria, setDataVistoria] = useState<string>(new Date().toISOString().split('T')[0]);
 
   // Extrair empresas únicas
   const uniqueEmpresas = Array.from(new Set(mockRoutes.map(r => r.empresa)));
@@ -81,7 +82,7 @@ export function NewInspectionDialog() {
       autoAvaliar: 0,
       caltelar: 0,
       total: totalCalculado,
-      dataVistoria: new Date().toISOString().split('T')[0],
+      dataVistoria: dataVistoria,
       status: 'pendente'
     };
 
@@ -169,6 +170,18 @@ export function NewInspectionDialog() {
                   required 
                   value={km}
                   onChange={(e) => setKm(e.target.value)}
+                />
+              </div>
+
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="dataVistoria" className="text-right">Data Vistoria</Label>
+                <Input 
+                  id="dataVistoria" 
+                  type="date"
+                  className="col-span-3" 
+                  required 
+                  value={dataVistoria}
+                  onChange={(e) => setDataVistoria(e.target.value)}
                 />
               </div>
             </div>
