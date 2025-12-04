@@ -71,53 +71,48 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Tenta buscar da API. Se falhar (ex: 404 em dev sem serverless), usa mocks ou vazio.
-        // Para desenvolvimento local sem 'vercel dev', o fetch falhará.
-        // Podemos checar process.env.NODE_ENV
-        
-        const [vRes, uRes, bRes, iRes] = await Promise.allSettled([
-          fetch('/api/vehicles'),
-          fetch('/api/users'),
-          fetch('/api/branches'),
-          fetch('/api/inspections')
+        // Helper to safely fetch JSON or fallback
+        const safeFetch = async (url: string, mockData: any, storageKey: string) => {
+            try {
+                const res = await fetch(url);
+                const contentType = res.headers.get('content-type');
+                if (res.ok && contentType && contentType.includes('application/json')) {
+                    const data = await res.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        return data;
+                    }
+                }
+            } catch (e) {
+                // Ignore fetch error
+            }
+            // Fallback logic
+            const saved = localStorage.getItem(storageKey);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            }
+            return mockData;
+        };
+
+        const [vData, uData, bData, iData] = await Promise.all([
+            safeFetch('/api/vehicles', mockVehicles, 'oliveira_vehicles'),
+            safeFetch('/api/users', mockUsers, 'oliveira_users'),
+            safeFetch('/api/branches', mockFiliais, 'oliveira_branches'),
+            safeFetch('/api/inspections', mockInspections, 'oliveira_inspections')
         ]);
 
-        if (vRes.status === 'fulfilled' && vRes.value.ok) {
-          const data = await vRes.value.json();
-          setVehicles(data);
-        } else {
-           console.warn("Usando dados locais para Veículos (API não disponível ou erro)");
-           // Fallback to localStorage or Mock if API fails (dev mode without backend)
-           const saved = localStorage.getItem('oliveira_vehicles');
-           setVehicles(saved ? JSON.parse(saved) : mockVehicles);
-        }
-
-        if (uRes.status === 'fulfilled' && uRes.value.ok) {
-          const data = await uRes.value.json();
-          setUsers(data);
-        } else {
-           const saved = localStorage.getItem('oliveira_users');
-           setUsers(saved ? JSON.parse(saved) : mockUsers);
-        }
-
-        if (bRes.status === 'fulfilled' && bRes.value.ok) {
-          const data = await bRes.value.json();
-          setBranches(data);
-        } else {
-           const saved = localStorage.getItem('oliveira_branches');
-           setBranches(saved ? JSON.parse(saved) : mockFiliais);
-        }
-
-        if (iRes.status === 'fulfilled' && iRes.value.ok) {
-          const data = await iRes.value.json();
-          setInspections(data);
-        } else {
-           const saved = localStorage.getItem('oliveira_inspections');
-           setInspections(saved ? JSON.parse(saved) : mockInspections);
-        }
+        setVehicles(vData);
+        setUsers(uData);
+        setBranches(bData);
+        setInspections(iData);
 
       } catch (error) {
-        console.error("Erro ao buscar dados da API:", error);
+        console.error("Erro crítico ao carregar dados:", error);
+        // Last resort fallback
+        setVehicles(mockVehicles);
+        setUsers(mockUsers);
+        setBranches(mockFiliais);
+        setInspections(mockInspections);
       }
     };
 
