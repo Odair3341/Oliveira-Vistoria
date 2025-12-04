@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Inspection } from "@/data/mockInspections";
-import { mockRoutes } from "@/data/mockRoutes";
+import { mockRoutes, cityDistances } from "@/data/mockRoutes";
 import { useData } from "@/contexts/DataContext";
 import { toast } from "sonner";
 import { parseCurrencyInput } from "@/utils/formatUtils";
@@ -71,15 +71,28 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
   // Atualizar KM quando origem/destino mudar
   useEffect(() => {
     if (origem && destino) {
-      // Lógica simples: Se um deles for a base (Naviraí), busca a distância do outro na lista de rotas
-      // Se nenhum for a base, não calcula automaticamente (ou precisaria de uma matriz de distâncias completa)
-      const targetCity = origem === 'Naviraí' ? destino : (destino === 'Naviraí' ? origem : null);
+      let distance = 0;
+
+      // 1. Check specific matrix first
+      if (cityDistances[origem] && cityDistances[origem][destino]) {
+        distance = cityDistances[origem][destino];
+      } else if (cityDistances[destino] && cityDistances[destino][origem]) {
+        distance = cityDistances[destino][origem];
+      }
       
-      if (targetCity) {
-        const route = mockRoutes.find(r => r.cidade === targetCity);
-        if (route) {
-           handleChange('kmDeslocamento', route.distancia.toString());
-        }
+      // 2. If not found, check if one is Naviraí (Base)
+      else {
+          const targetCity = origem === 'Naviraí' ? destino : (destino === 'Naviraí' ? origem : null);
+          if (targetCity) {
+            const route = mockRoutes.find(r => r.cidade === targetCity);
+            if (route) {
+                distance = route.distancia;
+            }
+          }
+      }
+
+      if (distance > 0) {
+         handleChange('kmDeslocamento', distance.toString());
       }
     }
   }, [origem, destino]);
