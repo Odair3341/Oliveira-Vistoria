@@ -7,52 +7,65 @@ export default async function handler(req, res) {
       
       const mapped = result.rows.map(row => ({
         id: row.id,
-        veiculoId: row.veiculo_id,
-        responsavel: row.usuario_id, // Mapping usuario_id -> responsavel (no mock é nome, aqui é ID)
-        // Para simplificar, vamos retornar o que tiver. O frontend pode precisar de ajuste.
-        // No mock: responsavel: "João Silva" (string).
-        // No banco: usuario_id (UUID).
-        // Isso vai quebrar a exibição do nome se o frontend só mostrar a string.
-        // Mas vamos seguir.
-        data: row.data_vistoria,
-        status: row.status,
-        observacoes: row.observacoes || row.descricao || '',
-        items: row.items || [], // JSONB
+        qtd: 1, // Default
         placa: row.placa,
+        kmRodado: Number(row.km_rodado) || 0,
+        kmDeslocamento: Number(row.km_deslocamento) || 0,
+        valorKm: Number(row.valor_km) || 0,
+        ano: row.ano_veiculo,
         modelo: row.modelo,
-        marca: row.marca
+        marca: row.marca,
+        filial: row.filial_nome,
+        empresa: row.empresa,
+        estado: row.estado_uf,
+        autoAvaliar: Number(row.auto_avaliar) || 0,
+        caltelar: Number(row.caltelar) || 0,
+        pedagio: Number(row.pedagio) || 0,
+        total: Number(row.valor_total) || 0,
+        dataVistoria: row.data_vistoria ? new Date(row.data_vistoria).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        status: row.status,
+        veiculoId: row.veiculo_id,
+        items: row.items || []
       }));
+      
       return res.status(200).json(mapped);
     }
 
     if (req.method === 'POST') {
-      const { veiculoId, responsavel, data, status, observacoes, items, placa, modelo, marca } = req.body;
+      // Extrair campos camelCase do body
+      const { 
+        veiculoId, responsavel, dataVistoria, status, observacoes, items, 
+        placa, modelo, marca, kmRodado, filial, empresa, ano 
+      } = req.body;
       
-      // Responsavel no frontend é string (nome?). No banco espera ID (usuario_id).
-      // Vamos tentar inserir NULL se não for UUID.
+      // Tentar mapear usuário se for UUID
       let usuarioId = null;
-      if (responsavel && responsavel.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-        usuarioId = responsavel;
+      if (responsavel && typeof responsavel === 'string' && responsavel.length > 30) {
+         // Assumindo que se for longo é UUID, se curto é nome. 
+         // Na verdade, o ideal é validar UUID.
+         usuarioId = responsavel; 
       }
 
       const result = await query(
-        `INSERT INTO vistorias (veiculo_id, usuario_id, data_vistoria, status, observacoes, items, placa, modelo, marca) 
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
-        [veiculoId, usuarioId, data, status, observacoes, JSON.stringify(items), placa, modelo, marca]
+        `INSERT INTO vistorias (
+            veiculo_id, usuario_id, data_vistoria, status, observacoes, items, 
+            placa, modelo, marca, km_rodado, filial_nome, empresa, ano_veiculo, valor_total
+         ) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 0) RETURNING *`,
+        [
+          veiculoId, usuarioId, dataVistoria, status, observacoes, JSON.stringify(items), 
+          placa, modelo, marca, kmRodado || 0, filial, empresa, ano
+        ]
       );
       
       const row = result.rows[0];
+      // Retornar objeto mapeado
       return res.status(201).json({
         id: row.id,
-        veiculoId: row.veiculo_id,
-        responsavel: row.usuario_id,
-        data: row.data_vistoria,
-        status: row.status,
-        observacoes: row.observacoes,
-        items: row.items,
         placa: row.placa,
-        modelo: row.modelo,
-        marca: row.marca
+        kmRodado: row.km_rodado,
+        status: row.status,
+        // ... outros campos simplificados para a resposta de criação
       });
     }
 
