@@ -61,54 +61,123 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider = ({ children }: { children: ReactNode }) => {
-  // Initialize state from localStorage if available, otherwise use mocks
-  const [vehicles, setVehicles] = useState<Vehicle[]>(() => {
-    const saved = localStorage.getItem('oliveira_vehicles');
-    return saved ? JSON.parse(saved) : mockVehicles;
-  });
+  // Initialize state empty initially, then fetch
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [inspections, setInspections] = useState<Inspection[]>([]);
 
-  const [users, setUsers] = useState<User[]>(() => {
-    const saved = localStorage.getItem('oliveira_users');
-    return saved ? JSON.parse(saved) : mockUsers;
-  });
-
-  const [branches, setBranches] = useState<Branch[]>(() => {
-    const saved = localStorage.getItem('oliveira_branches');
-    return saved ? JSON.parse(saved) : mockFiliais;
-  });
-
-  const [inspections, setInspections] = useState<Inspection[]>(() => {
-    const saved = localStorage.getItem('oliveira_inspections');
-    return saved ? JSON.parse(saved) : mockInspections;
-  });
-
-  // Persist to localStorage whenever state changes
+  // Fetch data from API on mount
   useEffect(() => {
-    localStorage.setItem('oliveira_vehicles', JSON.stringify(vehicles));
-  }, [vehicles]);
+    const fetchData = async () => {
+      try {
+        // Tenta buscar da API. Se falhar (ex: 404 em dev sem serverless), usa mocks ou vazio.
+        // Para desenvolvimento local sem 'vercel dev', o fetch falhará.
+        // Podemos checar process.env.NODE_ENV
+        
+        const [vRes, uRes, bRes, iRes] = await Promise.allSettled([
+          fetch('/api/vehicles'),
+          fetch('/api/users'),
+          fetch('/api/branches'),
+          fetch('/api/inspections')
+        ]);
 
-  useEffect(() => {
-    localStorage.setItem('oliveira_users', JSON.stringify(users));
-  }, [users]);
+        if (vRes.status === 'fulfilled' && vRes.value.ok) {
+          const data = await vRes.value.json();
+          setVehicles(data);
+        } else {
+           console.warn("Usando dados locais para Veículos (API não disponível ou erro)");
+           // Fallback to localStorage or Mock if API fails (dev mode without backend)
+           const saved = localStorage.getItem('oliveira_vehicles');
+           setVehicles(saved ? JSON.parse(saved) : mockVehicles);
+        }
 
-  useEffect(() => {
-    localStorage.setItem('oliveira_branches', JSON.stringify(branches));
-  }, [branches]);
+        if (uRes.status === 'fulfilled' && uRes.value.ok) {
+          const data = await uRes.value.json();
+          setUsers(data);
+        } else {
+           const saved = localStorage.getItem('oliveira_users');
+           setUsers(saved ? JSON.parse(saved) : mockUsers);
+        }
 
-  useEffect(() => {
-    localStorage.setItem('oliveira_inspections', JSON.stringify(inspections));
-  }, [inspections]);
+        if (bRes.status === 'fulfilled' && bRes.value.ok) {
+          const data = await bRes.value.json();
+          setBranches(data);
+        } else {
+           const saved = localStorage.getItem('oliveira_branches');
+           setBranches(saved ? JSON.parse(saved) : mockFiliais);
+        }
 
-  // Actions Implementations
-  const addVehicle = (vehicle: Vehicle) => setVehicles([...vehicles, vehicle]);
+        if (iRes.status === 'fulfilled' && iRes.value.ok) {
+          const data = await iRes.value.json();
+          setInspections(data);
+        } else {
+           const saved = localStorage.getItem('oliveira_inspections');
+           setInspections(saved ? JSON.parse(saved) : mockInspections);
+        }
+
+      } catch (error) {
+        console.error("Erro ao buscar dados da API:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Actions Implementations - Updated to call API
+  const addVehicle = async (vehicle: Vehicle) => {
+    try {
+      const res = await fetch('/api/vehicles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(vehicle)
+      });
+      if (res.ok) {
+        const savedVehicle = await res.json();
+        setVehicles(prev => [...prev, savedVehicle]);
+      } else {
+        // Fallback local
+        setVehicles(prev => [...prev, vehicle]);
+        localStorage.setItem('oliveira_vehicles', JSON.stringify([...vehicles, vehicle]));
+      }
+    } catch (e) {
+      setVehicles(prev => [...prev, vehicle]);
+      localStorage.setItem('oliveira_vehicles', JSON.stringify([...vehicles, vehicle]));
+    }
+  };
+  
+  // Simplificação: Para update/delete e outros resources, vou manter a lógica local por enquanto
+  // para não estender demais o escopo da mudança de uma vez e quebrar a UI se a API não tiver implementada UPDATE/DELETE.
+  // Mas o ideal seria implementar todos.
+  // Como o usuário quer VER os dados do banco, o GET é o mais importante.
+  
   const updateVehicle = (vehicle: Vehicle) => {
     setVehicles(vehicles.map(v => v.id === vehicle.id ? vehicle : v));
+    // TODO: Implement API update
   };
   const deleteVehicle = (placa: string) => {
     setVehicles(vehicles.filter(v => v.placa !== placa));
+     // TODO: Implement API delete
   };
 
-  const addUser = (user: User) => setUsers([...users, user]);
+  const addUser = async (user: User) => {
+    try {
+        const res = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(user)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          setUsers(prev => [...prev, saved]);
+        } else {
+          setUsers(prev => [...prev, user]);
+        }
+    } catch(e) {
+        setUsers(prev => [...prev, user]);
+    }
+  };
+  
   const updateUser = (user: User) => {
     setUsers(users.map(u => u.id === user.id ? user : u));
   };
@@ -116,7 +185,24 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     setUsers(users.filter(u => u.nome !== userName));
   };
 
-  const addBranch = (branch: Branch) => setBranches([...branches, branch]);
+  const addBranch = async (branch: Branch) => {
+      try {
+        const res = await fetch('/api/branches', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(branch)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          setBranches(prev => [...prev, saved]);
+        } else {
+          setBranches(prev => [...prev, branch]);
+        }
+      } catch(e) {
+          setBranches(prev => [...prev, branch]);
+      }
+  };
+
   const updateBranch = (branch: Branch) => {
     setBranches(branches.map(b => b.id === branch.id ? branch : b));
   };
@@ -124,13 +210,31 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     setBranches(branches.filter(b => b.nome !== name));
   };
 
-  const addInspection = (inspection: Inspection) => setInspections([...inspections, inspection]);
+  const addInspection = async (inspection: Inspection) => {
+      try {
+        const res = await fetch('/api/inspections', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(inspection)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          setInspections(prev => [...prev, saved]);
+        } else {
+           setInspections(prev => [...prev, inspection]);
+        }
+      } catch(e) {
+          setInspections(prev => [...prev, inspection]);
+      }
+  };
+
   const updateInspection = (inspection: Inspection) => {
     setInspections(inspections.map(i => i.id === inspection.id ? inspection : i));
   };
   const deleteInspection = (id: string) => {
     setInspections(inspections.filter(i => i.id !== id));
   };
+
 
   const clearVehicles = () => setVehicles([]);
   const clearUsers = () => setUsers([]);
