@@ -48,13 +48,24 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
   // Filtrar filiais baseadas na empresa selecionada
   const availableFiliais = mockRoutes.filter(r => r.empresa === selectedEmpresa);
 
+  // Garantir que a filial atual esteja na lista de opções (caso venha do banco com alguma diferença ou não exista no mock)
+  if (selectedFilial && !availableFiliais.some(r => r.filial === selectedFilial)) {
+    availableFiliais.push({
+      id: 'current-filial',
+      empresa: selectedEmpresa,
+      filial: selectedFilial,
+      cidade: selectedFilial,
+      distancia: 0
+    });
+  }
+
   useEffect(() => {
     if (inspection) {
       setFormData({ ...inspection });
-      setSelectedEmpresa(inspection.empresa || '');
-      setSelectedFilial(inspection.filial || '');
-      setOrigem(inspection.origem || '');
-      setDestino(inspection.destino || '');
+      setSelectedEmpresa(inspection.empresa?.trim() || '');
+      setSelectedFilial(inspection.filial?.trim() || '');
+      setOrigem(inspection.origem?.trim() || '');
+      setDestino(inspection.destino?.trim() || '');
     }
   }, [inspection]);
 
