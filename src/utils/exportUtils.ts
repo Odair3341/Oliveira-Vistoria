@@ -31,34 +31,37 @@ export const exportToCSV = (data: any[], filename: string) => {
 };
 
 export const exportToPDF = (data: any[], title: string, columns: string[]) => {
-  const doc = new jsPDF();
+  const doc = new jsPDF({
+    orientation: 'landscape',
+    unit: 'mm',
+    format: 'a4'
+  });
 
   // Configurações ABNT (aproximadas para PDF)
   // Margens: Superior/Esquerda 3cm, Inferior/Direita 2cm
-  // Fonte: Arial (Helvetica no PDF) ou Times
   
-  const margins = { top: 30, right: 20, bottom: 20, left: 30 };
+  const margins = { top: 20, right: 20, bottom: 20, left: 20 };
   
   // Cabeçalho
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
-  doc.text('VISTORIA OLIVEIRA', margins.left, 20);
+  doc.text('VISTORIA OLIVEIRA', margins.left, 15);
   
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text('Sistema Integrado de Gestão de Frotas e Vistorias', margins.left, 25);
+  doc.text('Sistema Integrado de Gestão de Frotas e Vistorias', margins.left, 20);
   
   // Título do Relatório
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
-  doc.text(title.toUpperCase(), doc.internal.pageSize.width / 2, 40, { align: 'center' });
+  doc.text(title.toUpperCase(), doc.internal.pageSize.width / 2, 30, { align: 'center' });
   
   // Data de Geração
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
   const today = new Date().toLocaleDateString('pt-BR');
   const time = new Date().toLocaleTimeString('pt-BR');
-  doc.text(`Gerado em: ${today} às ${time}`, margins.left, 45);
+  doc.text(`Gerado em: ${today} às ${time}`, margins.left, 35);
 
   // Preparar dados para a tabela
   const tableBody = data.map(row => columns.map(col => {
@@ -80,18 +83,26 @@ export const exportToPDF = (data: any[], title: string, columns: string[]) => {
   autoTable(doc, {
     head: [columns.map(c => c.toUpperCase())],
     body: tableBody,
-    startY: 50,
+    startY: 40,
     theme: 'grid',
     styles: {
       font: 'helvetica',
-      fontSize: 10,
+      fontSize: 9, // Fonte menor para caber na página
       cellPadding: 2,
     },
     headStyles: {
       fillColor: [41, 128, 185], // Cor azul padrão
       textColor: 255,
       fontStyle: 'bold',
-      halign: 'center'
+      halign: 'center',
+      fontSize: 9
+    },
+    columnStyles: {
+        0: { cellWidth: 'auto' }, // Placa
+        1: { cellWidth: 'auto' }, // Modelo
+        2: { cellWidth: 'auto' }, // Filial
+        3: { cellWidth: 'auto' }, // Data
+        // Ajustar larguras se necessário
     },
     margin: margins,
     didDrawPage: (data) => {
