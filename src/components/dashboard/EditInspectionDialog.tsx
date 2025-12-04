@@ -53,6 +53,8 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
       setFormData({ ...inspection });
       setSelectedEmpresa(inspection.empresa || '');
       setSelectedFilial(inspection.filial || '');
+      setOrigem(inspection.origem || '');
+      setDestino(inspection.destino || '');
     }
   }, [inspection]);
 
@@ -247,7 +249,7 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="origem">Origem</Label>
-                  <Select onValueChange={setOrigem} value={origem}>
+                  <Select onValueChange={(val) => { setOrigem(val); handleChange('origem', val); }} value={origem}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione a origem" />
                     </SelectTrigger>
@@ -262,7 +264,7 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
                 
                 <div className="space-y-2">
                   <Label htmlFor="destino">Destino</Label>
-                  <Select onValueChange={setDestino} value={destino}>
+                  <Select onValueChange={(val) => { setDestino(val); handleChange('destino', val); }} value={destino}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o destino" />
                     </SelectTrigger>

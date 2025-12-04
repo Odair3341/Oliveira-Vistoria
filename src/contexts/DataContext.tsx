@@ -223,8 +223,22 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       }
   };
 
-  const updateInspection = (inspection: Inspection) => {
-    setInspections(inspections.map(i => i.id === inspection.id ? inspection : i));
+  const updateInspection = async (inspection: Inspection) => {
+    try {
+        const res = await fetch('/api/inspections', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(inspection)
+        });
+        if (res.ok) {
+            const updated = await res.json();
+             setInspections(prev => prev.map(i => i.id === inspection.id ? { ...i, ...updated } : i));
+        } else {
+             setInspections(prev => prev.map(i => i.id === inspection.id ? inspection : i));
+        }
+    } catch (e) {
+         setInspections(prev => prev.map(i => i.id === inspection.id ? inspection : i));
+    }
   };
   const deleteInspection = (id: string) => {
     setInspections(inspections.filter(i => i.id !== id));

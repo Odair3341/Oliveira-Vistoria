@@ -102,7 +102,7 @@ export const exportToPDF = (data: any[], title: string, columns: string[]) => {
          1: { cellWidth: 'auto' }, // Modelo
          2: { cellWidth: 'auto' }, // Filial
          3: { cellWidth: 'auto' }, // Data
-         4: { cellWidth: 'auto' }, // Hodometro
+         4: { cellWidth: 'auto' }, // Rota
          5: { cellWidth: 'auto' }, // KM Desloc
          // Ajustar larguras se necessário
      },
