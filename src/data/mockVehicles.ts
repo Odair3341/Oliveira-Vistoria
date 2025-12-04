@@ -17,7 +17,7 @@ export const mockVehicles: Vehicle[] = [
   { id: '2', placa: 'QIQ-1024', marca: 'FIAT', modelo: 'MOBI WAY', ano: 2018, cor: 'Branca', status: 'ativo', filial: 'Naviraí', empresa: 'Equagril', kmAtual: 119683, tipo: 'Carro' },
   { id: '3', placa: 'QIO-7756', marca: 'FIAT', modelo: 'PALIO ATTRACTIV 1.4', ano: 2017, cor: 'Prata', status: 'ativo', filial: 'Ponta Porã', empresa: 'Tratores', kmAtual: 127264, tipo: 'Carro' },
   { id: '4', placa: 'QAH-5183', marca: 'FIAT', modelo: 'STRADA HD WK CC E', ano: 2018, cor: 'Branca', status: 'ativo', filial: 'Naviraí', empresa: 'Equagril', kmAtual: 150458, tipo: 'Carro' },
-  { id: '5', placa: 'BBT-5H62', marca: 'FIAT', modelo: 'STRADA HD WK CC E', ano: 2008, cor: 'Prata', status: 'manutencao', filial: 'Naviraí', empresa: 'Tratores', kmAtual: 190406, tipo: 'Carro' },
+  { id: '5', placa: 'BBT-5H62', marca: 'FIAT', modelo: 'STRADA HD WK CC E', ano: 2008, cor: 'Prata', status: 'ativo', filial: 'Naviraí', empresa: 'Tratores', kmAtual: 190406, tipo: 'Carro' },
   { id: '6', placa: 'QAM-6763', marca: 'FIAT', modelo: 'UNO ATTRACTIV 1.0', ano: 2019, cor: 'Vermelha', status: 'ativo', filial: 'Naviraí', empresa: 'Agricase', kmAtual: 163292, tipo: 'Carro' },
   { id: '7', placa: 'QAM-0651', marca: 'FIAT', modelo: 'UNO ATTRACTIV 1.0', ano: 2019, cor: 'Branca', status: 'ativo', filial: 'Jardim', empresa: 'Agricase', kmAtual: 140687, tipo: 'Carro' },
   { id: '8', placa: 'QAQ-7235', marca: 'FIAT', modelo: 'STRADA HD WK CC E', ano: 2019, cor: 'Branca', status: 'ativo', filial: 'Dourados 2', empresa: 'Agricase', kmAtual: 105393, tipo: 'Carro' },
