@@ -292,7 +292,11 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="origem">Origem</Label>
-                  <Select onValueChange={(val) => handleRouteUpdate(val, destino)} value={origem}>
+                  <Select 
+                    key={`origem-${inspection.id}-${origem}`}
+                    onValueChange={(val) => handleRouteUpdate(val, destino)} 
+                    value={origem}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione a origem" />
                     </SelectTrigger>
@@ -307,7 +311,11 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
                 
                 <div className="space-y-2">
                   <Label htmlFor="destino">Destino</Label>
-                  <Select onValueChange={(val) => handleRouteUpdate(origem, val)} value={destino}>
+                  <Select 
+                    key={`destino-${inspection.id}-${destino}`}
+                    onValueChange={(val) => handleRouteUpdate(origem, val)} 
+                    value={destino}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o destino" />
                     </SelectTrigger>
