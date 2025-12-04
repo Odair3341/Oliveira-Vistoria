@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  :root {
+    /* Navy Blue - Professional Automotive */
+    --background: 220 20% 97%;
+    --foreground: 220 30% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 10%;
+
+    /* Deep Navy Primary */
+    --primary: 220 60% 25%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Soft Blue-Gray Secondary */
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 220 30% 20%;
+
+    --muted: 220 15% 94%;
+    --muted-foreground: 220 10% 45%;
+
+    /* Amber Accent */
+    --accent: 38 95% 55%;
+    --accent-foreground: 220 30% 10%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Success Green */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    /* Warning Orange */
+    --warning: 25 95% 53%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 220 15% 88%;
+    --input: 220 15% 88%;
+    --ring: 220 60% 25%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar - Darker Navy */
+    --sidebar-background: 220 45% 12%;
+    --sidebar-foreground: 220 15% 85%;
+    --sidebar-primary: 38 95% 55%;
+    --sidebar-primary-foreground: 220 30% 10%;
+    --sidebar-accent: 220 35% 20%;
+    --sidebar-accent-foreground: 220 15% 95%;
+    --sidebar-border: 220 30% 20%;
+    --sidebar-ring: 38 95% 55%;
+
+    /* Custom tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(220 60% 25%), hsl(220 50% 35%));
+    --gradient-accent: linear-gradient(135deg, hsl(38 95% 55%), hsl(25 95% 53%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 20% 98%));
+    
+    --shadow-sm: 0 1px 2px 0 hsl(220 30% 10% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(220 30% 10% / 0.07), 0 2px 4px -2px hsl(220 30% 10% / 0.05);
+    --shadow-lg: 0 10px 15px -3px hsl(220 30% 10% / 0.08), 0 4px 6px -4px hsl(220 30% 10% / 0.05);
+    --shadow-card: 0 1px 3px hsl(220 30% 10% / 0.06), 0 1px 2px -1px hsl(220 30% 10% / 0.06);
+    --shadow-card-hover: 0 10px 25px -5px hsl(220 30% 10% / 0.1), 0 8px 10px -6px hsl(220 30% 10% / 0.08);
+  }
+
+  .dark {
+    --background: 220 30% 8%;
+    --foreground: 220 15% 95%;
+
+    --card: 220 30% 12%;
+    --card-foreground: 220 15% 95%;
+
+    --popover: 220 30% 12%;
+    --popover-foreground: 220 15% 95%;
+
+    --primary: 38 95% 55%;
+    --primary-foreground: 220 30% 10%;
+
+    --secondary: 220 25% 18%;
+    --secondary-foreground: 220 15% 90%;
+
+    --muted: 220 25% 15%;
+    --muted-foreground: 220 10% 55%;
+
+    --accent: 38 95% 55%;
+    --accent-foreground: 220 30% 10%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 25 95% 55%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 220 25% 20%;
+    --input: 220 25% 20%;
+    --ring: 38 95% 55%;
+
+    --sidebar-background: 220 35% 6%;
+    --sidebar-foreground: 220 15% 85%;
+    --sidebar-primary: 38 95% 55%;
+    --sidebar-primary-foreground: 220 30% 10%;
+    --sidebar-accent: 220 30% 15%;
+    --sidebar-accent-foreground: 220 15% 95%;
+    --sidebar-border: 220 25% 15%;
+    --sidebar-ring: 38 95% 55%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(38 95% 55%), hsl(25 95% 53%));
+    --gradient-card: linear-gradient(180deg, hsl(220 30% 12%), hsl(220 30% 10%));
+    
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.4), 0 2px 4px -2px hsl(0 0% 0% / 0.3);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.5), 0 4px 6px -4px hsl(0 0% 0% / 0.4);
+    --shadow-card: 0 1px 3px hsl(0 0% 0% / 0.3), 0 1px 2px -1px hsl(0 0% 0% / 0.2);
+    --shadow-card-hover: 0 10px 25px -5px hsl(0 0% 0% / 0.5), 0 8px 10px -6px hsl(0 0% 0% / 0.4);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  .card-hover:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+}
