@@ -68,21 +68,26 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
     }
   }, [selectedEmpresa, selectedFilial]);
 
-  // Atualizar KM quando origem/destino mudar
-  useEffect(() => {
-    if (origem && destino) {
+  // Função para atualizar rota e calcular distância apenas quando o usuário altera manualmente
+  const handleRouteUpdate = (newOrigem: string, newDestino: string) => {
+    setOrigem(newOrigem);
+    setDestino(newDestino);
+    handleChange('origem', newOrigem);
+    handleChange('destino', newDestino);
+
+    if (newOrigem && newDestino) {
       let distance = 0;
 
       // 1. Check specific matrix first
-      if (cityDistances[origem] && cityDistances[origem][destino]) {
-        distance = cityDistances[origem][destino];
-      } else if (cityDistances[destino] && cityDistances[destino][origem]) {
-        distance = cityDistances[destino][origem];
+      if (cityDistances[newOrigem] && cityDistances[newOrigem][newDestino]) {
+        distance = cityDistances[newOrigem][newDestino];
+      } else if (cityDistances[newDestino] && cityDistances[newDestino][newOrigem]) {
+        distance = cityDistances[newDestino][newOrigem];
       }
       
       // 2. If not found, check if one is Naviraí (Base)
       else {
-          const targetCity = origem === 'Naviraí' ? destino : (destino === 'Naviraí' ? origem : null);
+          const targetCity = newOrigem === 'Naviraí' ? newDestino : (newDestino === 'Naviraí' ? newOrigem : null);
           if (targetCity) {
             const route = mockRoutes.find(r => r.cidade === targetCity);
             if (route) {
@@ -91,11 +96,12 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
           }
       }
 
-      if (distance > 0) {
+      // Atualiza o KM apenas se encontrou uma distância
+      if (distance >= 0) {
          handleChange('kmDeslocamento', distance.toString());
       }
     }
-  }, [origem, destino]);
+  };
 
   const handleChange = (field: keyof Inspection, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -262,7 +268,7 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="origem">Origem</Label>
-                  <Select onValueChange={(val) => { setOrigem(val); handleChange('origem', val); }} value={origem}>
+                  <Select onValueChange={(val) => handleRouteUpdate(val, destino)} value={origem}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione a origem" />
                     </SelectTrigger>
@@ -277,7 +283,7 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
                 
                 <div className="space-y-2">
                   <Label htmlFor="destino">Destino</Label>
-                  <Select onValueChange={(val) => { setDestino(val); handleChange('destino', val); }} value={destino}>
+                  <Select onValueChange={(val) => handleRouteUpdate(origem, val)} value={destino}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o destino" />
                     </SelectTrigger>
