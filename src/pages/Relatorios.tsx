@@ -133,14 +133,18 @@ const Relatorios = () => {
       switch (reportName) {
         case "Relatório Geral de Vistorias":
         case "Relatório Completo (PDF)":
-          columns = ['placa', 'modelo', 'filial', 'dataVistoria', 'status', 'total'];
+          columns = ['Placa', 'Modelo', 'Filial', 'Data', 'KM Rodado', 'Valor KM', 'Pedagio', 'Taxa', 'Total'];
           data = inspections.map(i => ({
-            placa: i.placa,
-            modelo: i.modelo,
-            filial: i.filial,
-            dataVistoria: new Date(i.dataVistoria).toLocaleDateString('pt-BR'),
-            status: i.status.toUpperCase(),
-            total: i.total
+            'Placa': i.placa,
+            'Modelo': i.modelo,
+            'Filial': i.filial,
+            'Data': new Date(i.dataVistoria).toLocaleDateString('pt-BR'),
+            'KM Rodado': `${i.kmRodado} km`,
+            'Valor KM': i.valorKm || 0,
+            'Pedagio': i.pedagio || 0,
+            'Taxa': (i.autoAvaliar || 0) + (i.caltelar || 0),
+            'Status': i.status.toUpperCase(),
+            'Total': i.total
           }));
           break;
 

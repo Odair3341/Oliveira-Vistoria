@@ -64,7 +64,13 @@ export const exportToPDF = (data: any[], title: string, columns: string[]) => {
   const tableBody = data.map(row => columns.map(col => {
     const val = row[col];
     // Formatar valores monetários se necessário
-    if (typeof val === 'number' && (col.toLowerCase().includes('valor') || col.toLowerCase().includes('total') || col.toLowerCase().includes('custo'))) {
+    if (typeof val === 'number' && (
+      col.toLowerCase().includes('valor') || 
+      col.toLowerCase().includes('total') || 
+      col.toLowerCase().includes('custo') ||
+      col.toLowerCase().includes('pedagio') ||
+      col.toLowerCase().includes('taxa')
+    )) {
       return `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     }
     return val;
@@ -114,12 +120,25 @@ export const exportToPDF = (data: any[], title: string, columns: string[]) => {
    }
 
    data.forEach(row => {
-     columns.forEach(col => {
-        const val = row[col];
-        if (typeof val === 'number' && (col.toLowerCase().includes('valor') || col.toLowerCase().includes('total') || col.toLowerCase().includes('custo'))) {
-           totalFaturado += val;
-        }
-     });
+     // Se houver uma coluna de total explícita, usa ela
+     const totalKey = columns.find(c => c.toLowerCase() === 'total' || c.toLowerCase() === 'valor_total');
+     
+     if (totalKey && typeof row[totalKey] === 'number') {
+        totalFaturado += row[totalKey];
+     } else {
+         // Fallback: soma colunas de valor se não houver total explícito (mas evita somar duplicado se total existir)
+          columns.forEach(col => {
+             const val = row[col];
+             if (typeof val === 'number' && (
+               col.toLowerCase().includes('valor') || 
+               col.toLowerCase().includes('custo') ||
+               col.toLowerCase().includes('pedagio') ||
+               col.toLowerCase().includes('taxa')
+             )) {
+                totalFaturado += val;
+             }
+          });
+     }
    });
  
    const finalY = (doc as any).lastAutoTable.finalY + 15;
