@@ -43,7 +43,7 @@ const Index = () => {
         />
         <StatCard
           title="Valor Total"
-          value={`R$ ${stats.valorTotal.toLocaleString('pt-BR')}`}
+          value={`R$ ${Number(stats.valorTotal || 0).toLocaleString('pt-BR')}`}
           subtitle="Avaliações acumuladas"
           icon={DollarSign}
           trend={{ value: 8, positive: true }}

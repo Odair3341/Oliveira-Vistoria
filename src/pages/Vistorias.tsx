@@ -83,7 +83,7 @@ function InspectionCard({
             </span>
             <span className="flex items-center gap-1">
               <Gauge className="h-3.5 w-3.5" />
-              {inspection.kmRodado.toLocaleString('pt-BR')} km
+              {Number(inspection.kmRodado || 0).toLocaleString('pt-BR')} km
             </span>
             <span className="text-muted-foreground/70">
               Ano: {inspection.ano}
@@ -96,7 +96,7 @@ function InspectionCard({
             {hasValue ? (
               <>
                 <p className="text-lg font-bold text-foreground">
-                  R$ {inspection.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  R$ {Number(inspection.total || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </p>
                 <p className="text-xs text-muted-foreground mb-2">Valor total</p>
               </>

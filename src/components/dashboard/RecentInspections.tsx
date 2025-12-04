@@ -65,7 +65,7 @@ export function RecentInspections() {
             
             <div className="text-right flex-shrink-0">
               <p className="text-sm font-semibold text-foreground">
-                {inspection.total > 0 ? `R$ ${inspection.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-'}
+                {(inspection.total !== undefined && inspection.total !== null && inspection.total > 0) ? `R$ ${Number(inspection.total).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-'}
               </p>
               <p className="text-xs text-muted-foreground">Total</p>
             </div>
