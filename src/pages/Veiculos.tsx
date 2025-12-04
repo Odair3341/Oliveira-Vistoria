@@ -179,8 +179,8 @@ const Veiculos = () => {
                 <h3 className="font-mono text-lg font-bold text-foreground">
                   {vehicle.placa}
                 </h3>
-                <Badge variant={statusConfig[vehicle.status].variant}>
-                  {statusConfig[vehicle.status].label}
+                <Badge variant={statusConfig[vehicle.status as keyof typeof statusConfig]?.variant || 'default'}>
+                  {statusConfig[vehicle.status as keyof typeof statusConfig]?.label || vehicle.status}
                 </Badge>
               </div>
               <p className="text-sm font-medium text-muted-foreground">

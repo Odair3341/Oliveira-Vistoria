@@ -44,8 +44,8 @@ export function RecentInspections() {
                 <span className="font-mono text-sm font-semibold text-foreground">
                   {inspection.placa}
                 </span>
-                <Badge variant={statusConfig[inspection.status].variant}>
-                  {statusConfig[inspection.status].label}
+                <Badge variant={statusConfig[inspection.status as keyof typeof statusConfig]?.variant || 'default'}>
+                  {statusConfig[inspection.status as keyof typeof statusConfig]?.label || inspection.status}
                 </Badge>
               </div>
               <p className="truncate text-sm text-muted-foreground">

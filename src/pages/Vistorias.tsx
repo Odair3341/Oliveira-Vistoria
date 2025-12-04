@@ -63,8 +63,8 @@ function InspectionCard({
             <span className="font-mono text-lg font-bold text-foreground">
               {inspection.placa}
             </span>
-            <Badge variant={statusConfig[inspection.status].variant}>
-              {statusConfig[inspection.status].label}
+            <Badge variant={statusConfig[inspection.status as keyof typeof statusConfig]?.variant || 'default'}>
+              {statusConfig[inspection.status as keyof typeof statusConfig]?.label || inspection.status}
             </Badge>
           </div>
           

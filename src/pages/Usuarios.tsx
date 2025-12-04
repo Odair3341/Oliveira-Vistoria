@@ -171,8 +171,8 @@ const Usuarios = () => {
 
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-2">
-                <Badge variant={statusConfig[user.status].variant}>
-                  {statusConfig[user.status].label}
+                <Badge variant={statusConfig[user.status as keyof typeof statusConfig]?.variant || 'default'}>
+                  {statusConfig[user.status as keyof typeof statusConfig]?.label || user.status}
                 </Badge>
                 <span className="text-xs text-muted-foreground">
                   Último acesso: {user.ultimoAcesso.split(' ')[0]}
