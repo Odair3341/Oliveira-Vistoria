@@ -255,6 +255,7 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
                 <div className="space-y-2">
                   <Label htmlFor="filial">Cidade/Filial</Label>
                   <Select 
+                    key={`${inspection.id}-${selectedEmpresa}`} // Force re-render when inspection or company changes
                     onValueChange={setSelectedFilial} 
                     value={selectedFilial}
                     disabled={!selectedEmpresa}
@@ -264,7 +265,7 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
                     </SelectTrigger>
                     <SelectContent>
                       {availableFiliais.map(route => (
-                        <SelectItem key={route.id} value={route.filial}>{route.filial}</SelectItem>
+                        <SelectItem key={route.id || route.filial} value={route.filial}>{route.filial}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

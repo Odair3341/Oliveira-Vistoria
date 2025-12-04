@@ -13,7 +13,7 @@ export const mockRoutes: Route[] = [
   { id: '2', empresa: 'Tratores', filial: 'Ponta Porã', cidade: 'Ponta Porã', distancia: 280 },
   { id: '3', empresa: 'Tratores', filial: 'Naviraí', cidade: 'Naviraí', distancia: 0 },
   { id: '4', empresa: 'Tratores', filial: 'São Gabriel do Oeste', cidade: 'São Gabriel do Oeste', distancia: 480 },
-  { id: '5', empresa: 'Tratores', filial: 'Três Lagoas', cidade: 'Três Lagoas', distancia: 423 }, // Atualizado conforme anotação
+  { id: '5', empresa: 'Tratores', filial: 'Três Lagoas', cidade: 'Três Lagoas', distancia: 423 }, 
   
   { id: '6', empresa: 'Equagril', filial: 'Naviraí', cidade: 'Naviraí', distancia: 0 },
   { id: '7', empresa: 'Equagril', filial: 'Jardim', cidade: 'Jardim', distancia: 250 },
@@ -21,7 +21,7 @@ export const mockRoutes: Route[] = [
   
   { id: '9', empresa: 'Agricase', filial: 'Naviraí', cidade: 'Naviraí', distancia: 0 },
   { id: '10', empresa: 'Agricase', filial: 'Jardim', cidade: 'Jardim', distancia: 250 },
-  { id: '11', empresa: 'Agricase', filial: 'Dourados', cidade: 'Dourados', distancia: 140 }, // Dourados conforme anotação (era 140 mesmo)
+  { id: '11', empresa: 'Agricase', filial: 'Dourados', cidade: 'Dourados', distancia: 140 }, 
   { id: '12', empresa: 'Agricase', filial: 'Dourados 2', cidade: 'Dourados', distancia: 145 },
   
   { id: '13', empresa: 'Agriceise', filial: 'Dourados', cidade: 'Dourados', distancia: 140 },
