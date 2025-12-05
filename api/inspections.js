@@ -151,22 +151,31 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'DELETE') {
-        const { id } = req.query;
+        const { id, placa } = req.query;
         const targetId = id || req.body.id;
 
-        if (!targetId) {
-            return res.status(400).json({ error: 'ID is required for deletion' });
+        if (!targetId && !placa) {
+            return res.status(400).json({ error: 'ID or placa is required for deletion' });
         }
 
-        console.log('DELETE request for ID:', targetId);
-
-        const result = await query('DELETE FROM vistorias WHERE id = $1 RETURNING id', [targetId]);
+        let result;
+        if (targetId) {
+            result = await query('DELETE FROM vistorias WHERE id = $1 RETURNING id', [targetId]);
+        } else {
+            result = await query(
+                `WITH del AS (
+                    SELECT id FROM vistorias WHERE placa = $1 ORDER BY data_vistoria DESC LIMIT 1
+                )
+                DELETE FROM vistorias WHERE id IN (SELECT id FROM del) RETURNING id`,
+                [placa]
+            );
+        }
 
         if (result.rowCount === 0) {
             return res.status(404).json({ error: 'Inspection not found' });
         }
 
-        return res.status(200).json({ message: 'Inspection deleted successfully', id: targetId });
+        return res.status(200).json({ message: 'Inspection deleted successfully', id: result.rows[0].id });
     }
 
     res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);

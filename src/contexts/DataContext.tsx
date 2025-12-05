@@ -258,26 +258,21 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         const res = await fetch(`/api/inspections?id=${id}`, {
             method: 'DELETE',
         });
+        const filtered = inspections.filter(i => i.id !== id);
+        setInspections(filtered);
+        localStorage.setItem('oliveira_inspections', JSON.stringify(filtered));
         if (res.ok) {
-             // Remover localmente
-             setInspections(inspections.filter(i => i.id !== id));
-             // Refetch para garantir consistência com o banco
-             try {
-               const refresh = await fetch('/api/inspections');
-               if (refresh.ok) {
-                 const data = await refresh.json();
-                 setInspections(data);
-                 localStorage.removeItem('oliveira_inspections');
-               }
-             } catch {}
-        } else {
-             // Fallback: update local state anyway, but warn
-             console.error("Failed to delete from API, deleting locally only");
-             setInspections(inspections.filter(i => i.id !== id));
+          const refresh = await fetch('/api/inspections');
+          if (refresh.ok) {
+            const data = await refresh.json();
+            setInspections(data);
+            localStorage.setItem('oliveira_inspections', JSON.stringify(data));
+          }
         }
     } catch (e) {
-         console.error("Error deleting inspection:", e);
-         setInspections(inspections.filter(i => i.id !== id));
+         const filtered = inspections.filter(i => i.id !== id);
+         setInspections(filtered);
+         localStorage.setItem('oliveira_inspections', JSON.stringify(filtered));
     }
   };
 
