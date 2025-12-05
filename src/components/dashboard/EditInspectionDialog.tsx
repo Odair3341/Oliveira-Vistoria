@@ -74,14 +74,15 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
   }
 
   useEffect(() => {
-    if (inspection && inspection.id !== formData.id) {
+    if (open && inspection) {
+      // Sempre recarrega os dados quando o modal é aberto
       setFormData({ ...inspection });
       setSelectedEmpresa(inspection.empresa?.trim() || '');
       setSelectedFilial(inspection.filial?.trim() || '');
       setOrigem(inspection.origem?.trim() || '');
       setDestino(inspection.destino?.trim() || '');
     }
-  }, [inspection]);
+  }, [open, inspection]);
 
   // Atualizar empresa e filial no formData quando selecionadas
   useEffect(() => {
