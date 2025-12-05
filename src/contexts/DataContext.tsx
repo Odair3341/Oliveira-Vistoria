@@ -240,17 +240,24 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             if (newDataRes.ok) {
                 const allInspections = await newDataRes.json();
                 setInspections(allInspections);
+                try { localStorage.setItem('oliveira_inspections', JSON.stringify(allInspections)); } catch {}
             } else {
                  // Se o re-fetch falhar, faz o update local como fallback
-                 setInspections(prev => prev.map(i => i.id === inspection.id ? inspection : i));
+                 const updatedList = inspections.map(i => i.id === inspection.id ? inspection : i);
+                 setInspections(updatedList);
+                 try { localStorage.setItem('oliveira_inspections', JSON.stringify(updatedList)); } catch {}
             }
         } else {
              // Se o PUT falhar, faz o update local como fallback
-             setInspections(prev => prev.map(i => i.id === inspection.id ? inspection : i));
+             const updatedList = inspections.map(i => i.id === inspection.id ? inspection : i);
+             setInspections(updatedList);
+             try { localStorage.setItem('oliveira_inspections', JSON.stringify(updatedList)); } catch {}
         }
     } catch (e) {
          // Se tudo falhar, faz o update local como fallback
-         setInspections(prev => prev.map(i => i.id === inspection.id ? inspection : i));
+         const updatedList = inspections.map(i => i.id === inspection.id ? inspection : i);
+         setInspections(updatedList);
+         try { localStorage.setItem('oliveira_inspections', JSON.stringify(updatedList)); } catch {}
     }
   };
   const deleteInspection = async (id: string) => {
