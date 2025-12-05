@@ -178,6 +178,7 @@ const Vistorias = () => {
       if (!hasAnyInspection) {
         const newInspection: Inspection = {
           id: Date.now().toString() + Math.random().toString().slice(2, 8),
+          veiculoId: vehicle.id,
           qtd: 1,
           placa: vehicle.placa,
           kmRodado: vehicle.kmAtual,

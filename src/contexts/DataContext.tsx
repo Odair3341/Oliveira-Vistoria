@@ -232,7 +232,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         });
         if (res.ok) {
             const updated = await res.json();
-             setInspections(prev => prev.map(i => i.id === inspection.id ? { ...i, ...updated } : i));
+             // Merge inspection (form data) with updated (server response) to ensure all fields are present
+             setInspections(prev => prev.map(i => i.id === inspection.id ? { ...inspection, ...updated } : i));
         } else {
              setInspections(prev => prev.map(i => i.id === inspection.id ? inspection : i));
         }
@@ -240,8 +241,22 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
          setInspections(prev => prev.map(i => i.id === inspection.id ? inspection : i));
     }
   };
-  const deleteInspection = (id: string) => {
-    setInspections(inspections.filter(i => i.id !== id));
+  const deleteInspection = async (id: string) => {
+    try {
+        const res = await fetch(`/api/inspections?id=${id}`, {
+            method: 'DELETE',
+        });
+        if (res.ok) {
+             setInspections(inspections.filter(i => i.id !== id));
+        } else {
+             // Fallback: update local state anyway, but warn
+             console.error("Failed to delete from API, deleting locally only");
+             setInspections(inspections.filter(i => i.id !== id));
+        }
+    } catch (e) {
+         console.error("Error deleting inspection:", e);
+         setInspections(inspections.filter(i => i.id !== id));
+    }
   };
 
 

@@ -19,6 +19,7 @@ export interface Inspection {
   total: number;
   dataVistoria: string;
   status: 'concluida' | 'pendente' | 'em_analise';
+  veiculoId?: string;
 }
 
 export const mockInspections: Inspection[] = [
