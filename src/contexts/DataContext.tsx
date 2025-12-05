@@ -232,6 +232,9 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         });
 
         if (res.ok) {
+            // Atraso de 2 segundos para mitigar possível replication lag.
+            await new Promise(resolve => setTimeout(resolve, 2000)); 
+
             // Força Bruta: Re-fetch a lista inteira para garantir consistência.
             const newDataRes = await fetch('/api/inspections');
             if (newDataRes.ok) {
