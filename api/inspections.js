@@ -79,6 +79,9 @@ export default async function handler(req, res) {
             origem, destino, kmDeslocamento, valorKm, pedagio, autoAvaliar, caltelar, total
         } = req.body;
 
+        console.log('PUT request received for ID:', id);
+        console.log('Body:', JSON.stringify(req.body, null, 2));
+
         if (!id) {
             return res.status(400).json({ error: 'ID is required for update' });
         }
@@ -89,7 +92,7 @@ export default async function handler(req, res) {
                 modelo = $2, 
                 marca = $3, 
                 km_rodado = $4, 
-                filial_nome = $5, 
+                filial_nome = $5, -- Usar origem para filial_nome
                 empresa = $6, 
                 ano_veiculo = $7,
                 origem = $8,
@@ -104,7 +107,7 @@ export default async function handler(req, res) {
                 data_vistoria = $17
              WHERE id = $18 RETURNING *`,
             [
-                placa, modelo, marca, kmRodado || 0, filial, empresa, ano,
+                placa, modelo, marca, kmRodado || 0, origem, empresa, ano, // 'filial' foi trocado por 'origem'
                 origem || '', destino || '', kmDeslocamento || 0, valorKm || 0, pedagio || 0, 
                 autoAvaliar || 0, caltelar || 0, total || 0, status, dataVistoria,
                 id

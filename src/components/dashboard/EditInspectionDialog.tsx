@@ -74,7 +74,7 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
   }
 
   useEffect(() => {
-    if (inspection) {
+    if (inspection && inspection.id !== formData.id) {
       setFormData({ ...inspection });
       setSelectedEmpresa(inspection.empresa?.trim() || '');
       setSelectedFilial(inspection.filial?.trim() || '');
