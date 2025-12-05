@@ -3,7 +3,7 @@ import query from './db.js';
 export default async function handler(req, res) {
   try {
     const mapRow = (row) => ({
-        id: row.id,
+        id: String(row.id),
         qtd: 1, // Default
         placa: row.placa,
         kmRodado: Number(row.km_rodado) || 0,

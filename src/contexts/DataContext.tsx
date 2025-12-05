@@ -259,7 +259,16 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             method: 'DELETE',
         });
         if (res.ok) {
+             // Remover localmente
              setInspections(inspections.filter(i => i.id !== id));
+             // Refetch para garantir consistência com o banco
+             try {
+               const refresh = await fetch('/api/inspections');
+               if (refresh.ok) {
+                 const data = await refresh.json();
+                 setInspections(data);
+               }
+             } catch {}
         } else {
              // Fallback: update local state anyway, but warn
              console.error("Failed to delete from API, deleting locally only");
