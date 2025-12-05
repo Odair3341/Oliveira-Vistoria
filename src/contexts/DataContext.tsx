@@ -230,14 +230,23 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(inspection)
         });
+
         if (res.ok) {
-            const updated = await res.json();
-             // Merge inspection (form data) with updated (server response) to ensure all fields are present
-             setInspections(prev => prev.map(i => i.id === inspection.id ? { ...inspection, ...updated } : i));
+            // Força Bruta: Re-fetch a lista inteira para garantir consistência.
+            const newDataRes = await fetch('/api/inspections');
+            if (newDataRes.ok) {
+                const allInspections = await newDataRes.json();
+                setInspections(allInspections);
+            } else {
+                 // Se o re-fetch falhar, faz o update local como fallback
+                 setInspections(prev => prev.map(i => i.id === inspection.id ? inspection : i));
+            }
         } else {
+             // Se o PUT falhar, faz o update local como fallback
              setInspections(prev => prev.map(i => i.id === inspection.id ? inspection : i));
         }
     } catch (e) {
+         // Se tudo falhar, faz o update local como fallback
          setInspections(prev => prev.map(i => i.id === inspection.id ? inspection : i));
     }
   };
