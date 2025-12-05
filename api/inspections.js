@@ -30,8 +30,7 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
       const result = await query('SELECT * FROM vistorias ORDER BY data_vistoria DESC');
-      
-      const mapped = result.rows.map(row => ({
+      const mapped = result.rows.map(mapRow);
       return res.status(200).json(mapped);
     }
 
@@ -95,6 +94,7 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'ID is required for update' });
         }
 
+        // 1. Update Inspection
         const result = await query(
             `UPDATE vistorias SET 
                 placa = $1, 
@@ -125,6 +125,26 @@ export default async function handler(req, res) {
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Inspection not found' });
+        }
+
+        // 2. Update Linked Vehicle (if veiculoId provided) to prevent duplicates/inconsistencies
+        if (veiculoId) {
+            try {
+                await query(
+                    `UPDATE veiculos SET 
+                        placa = $1, 
+                        modelo = $2, 
+                        marca = $3, 
+                        ano = $4, 
+                        km = $5
+                     WHERE id = $6`,
+                    [placa, modelo, marca, ano, kmRodado || 0, veiculoId]
+                );
+                console.log('Updated linked vehicle:', veiculoId);
+            } catch (vErr) {
+                console.error('Error updating linked vehicle:', vErr);
+                // Don't fail the request, just log it
+            }
         }
 
         return res.status(200).json(mapRow(result.rows[0]));
