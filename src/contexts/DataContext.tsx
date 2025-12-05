@@ -78,15 +78,18 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                 const contentType = res.headers.get('content-type');
                 if (res.ok && contentType && contentType.includes('application/json')) {
                     const data = await res.json();
-                    // Sempre confiar na API, mesmo que retorne lista vazia
-                    localStorage.removeItem(storageKey);
-                    return Array.isArray(data) ? data : mockData;
+                    if (Array.isArray(data) && data.length > 0) {
+                        // Quando a API retornar dados, usar e atualizar cache
+                        localStorage.setItem(storageKey, JSON.stringify(data));
+                        return data;
+                    }
+                    // Se a API retornar lista vazia, preservar dados locais ou mocks
                 }
             } catch (e) {}
             const saved = localStorage.getItem(storageKey);
             if (saved) {
                 const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed)) return parsed;
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
             }
             return mockData;
         };
