@@ -48,7 +48,7 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
   // Filtrar filiais baseadas na empresa selecionada
   const availableFiliais = mockRoutes.filter(r => r.empresa === selectedEmpresa);
 
-  // Garantir que a filial atual esteja na lista de opções (caso venha do banco com alguma diferença ou não exista no mock)
+  // Garantir que a filial atual esteja na lista de opções
   if (selectedFilial && !availableFiliais.some(r => r.filial === selectedFilial)) {
     availableFiliais.push({
       id: 'current-filial',
@@ -57,6 +57,20 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
       cidade: selectedFilial,
       distancia: 0
     });
+  }
+
+  // Garantir que Origem e Destino atuais estejam na lista de cidades
+  const currentOrigem = inspection?.origem?.trim() || '';
+  const currentDestino = inspection?.destino?.trim() || '';
+  
+  const origemOptions = ['Naviraí', ...uniqueCities.filter(c => c !== 'Naviraí')];
+  if (currentOrigem && !origemOptions.includes(currentOrigem)) {
+    origemOptions.push(currentOrigem);
+  }
+  
+  const destinoOptions = ['Naviraí', ...uniqueCities.filter(c => c !== 'Naviraí')];
+  if (currentDestino && !destinoOptions.includes(currentDestino)) {
+    destinoOptions.push(currentDestino);
   }
 
   useEffect(() => {
@@ -301,9 +315,8 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
                       <SelectValue placeholder="Selecione a origem" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Naviraí">Naviraí (Base)</SelectItem>
-                      {uniqueCities.filter(c => c !== 'Naviraí').map(city => (
-                        <SelectItem key={city} value={city}>{city}</SelectItem>
+                      {origemOptions.map(city => (
+                        <SelectItem key={city} value={city}>{city === 'Naviraí' ? 'Naviraí (Base)' : city}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -320,9 +333,8 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
                       <SelectValue placeholder="Selecione o destino" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Naviraí">Naviraí (Base)</SelectItem>
-                      {uniqueCities.filter(c => c !== 'Naviraí').map(city => (
-                        <SelectItem key={city} value={city}>{city}</SelectItem>
+                      {destinoOptions.map(city => (
+                        <SelectItem key={city} value={city}>{city === 'Naviraí' ? 'Naviraí (Base)' : city}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
