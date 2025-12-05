@@ -78,18 +78,15 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                 const contentType = res.headers.get('content-type');
                 if (res.ok && contentType && contentType.includes('application/json')) {
                     const data = await res.json();
-                    if (Array.isArray(data) && data.length > 0) {
-                        return data;
-                    }
+                    // Sempre confiar na API, mesmo que retorne lista vazia
+                    localStorage.removeItem(storageKey);
+                    return Array.isArray(data) ? data : mockData;
                 }
-            } catch (e) {
-                // Ignore fetch error
-            }
-            // Fallback logic
+            } catch (e) {}
             const saved = localStorage.getItem(storageKey);
             if (saved) {
                 const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                if (Array.isArray(parsed)) return parsed;
             }
             return mockData;
         };
@@ -267,6 +264,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                if (refresh.ok) {
                  const data = await refresh.json();
                  setInspections(data);
+                 localStorage.removeItem('oliveira_inspections');
                }
              } catch {}
         } else {
