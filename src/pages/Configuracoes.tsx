@@ -12,10 +12,28 @@ import { Trash2 } from 'lucide-react';
 import { useTheme } from '@/components/theme-provider';
 
 const Configuracoes = () => {
-  const { clearVehicles, clearInspections, clearUsers, clearMockData } = useData();
+  const { clearVehicles, clearInspections, clearUsers, clearMockData, currentUser, setCurrentUser, updateUser } = useData();
+  const [nome, setNome] = useState<string>(currentUser?.nome || 'João Silva');
+  const [email, setEmail] = useState<string>(currentUser?.email || 'joao.silva@empresa.com');
+  const [cargo] = useState<string>(currentUser?.cargo || 'Administrador');
+  const [departamento] = useState<string>(currentUser?.departamento || 'TI');
   const { theme, setTheme } = useTheme();
 
   const handleSaveProfile = () => {
+    if (!nome.trim()) {
+      toast.error('Informe um nome válido');
+      return;
+    }
+    const updated = {
+      ...(currentUser || {
+        id: Date.now().toString(),
+        nome: '', email: '', cargo: 'Administrador', departamento: 'TI', filial: 'Naviraí', status: 'ativo', ultimoAcesso: new Date().toISOString().split('T')[0]
+      }),
+      nome,
+      email
+    };
+    setCurrentUser(updated);
+    updateUser(updated);
     toast.success("Perfil atualizado com sucesso!");
   };
 
@@ -84,19 +102,19 @@ const Configuracoes = () => {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="nome">Nome Completo</Label>
-                  <Input id="nome" defaultValue="João Silva" />
+                  <Input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">E-mail</Label>
-                  <Input id="email" defaultValue="joao.silva@empresa.com" />
+                  <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cargo">Cargo</Label>
-                  <Input id="cargo" defaultValue="Administrador" disabled />
+                  <Input id="cargo" value={cargo} disabled />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="departamento">Departamento</Label>
-                  <Input id="departamento" defaultValue="TI" disabled />
+                  <Input id="departamento" value={departamento} disabled />
                 </div>
               </div>
             </CardContent>

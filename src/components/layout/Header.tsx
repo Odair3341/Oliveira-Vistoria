@@ -15,6 +15,9 @@ interface HeaderProps {
 }
 
 export function Header({ title, subtitle }: HeaderProps) {
+  const { currentUser } = useData();
+  const displayName = currentUser?.nome || 'João Silva';
+  const displayRole = currentUser?.cargo || 'Administrador';
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div>
@@ -39,8 +42,8 @@ export function Header({ title, subtitle }: HeaderProps) {
                 <User className="h-4 w-4" />
               </div>
               <div className="hidden text-left md:block">
-                <p className="text-sm font-medium text-foreground">João Silva</p>
-                <p className="text-xs text-muted-foreground">Administrador</p>
+                <p className="text-sm font-medium text-foreground">{displayName}</p>
+                <p className="text-xs text-muted-foreground">{displayRole}</p>
               </div>
             </Button>
           </DropdownMenuTrigger>
@@ -66,3 +69,4 @@ export function Header({ title, subtitle }: HeaderProps) {
     </header>
   );
 }
+import { useData } from '@/contexts/DataContext';

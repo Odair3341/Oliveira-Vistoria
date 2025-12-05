@@ -33,6 +33,7 @@ interface DataContextType {
   users: User[];
   branches: Branch[];
   inspections: Inspection[];
+  currentUser: User | null;
   
   // Actions
   addVehicle: (vehicle: Vehicle) => void;
@@ -42,6 +43,7 @@ interface DataContextType {
   addUser: (user: User) => void;
   updateUser: (user: User) => void;
   deleteUser: (userName: string) => void; // Keeping consistent with current implementation using name
+  setCurrentUser: (user: User) => void;
   
   addBranch: (branch: Branch) => void;
   updateBranch: (branch: Branch) => void;
@@ -66,6 +68,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
   const [inspections, setInspections] = useState<Inspection[]>([]);
+  const [currentUser, setCurrentUserState] = useState<User | null>(null);
 
   // Fetch data from API on mount
   useEffect(() => {
@@ -105,6 +108,16 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         setUsers(uData);
         setBranches(bData);
         setInspections(iData);
+
+        // Inicializar usuário atual
+        try {
+          const savedCurrent = localStorage.getItem('oliveira_current_user');
+          if (savedCurrent) {
+            setCurrentUserState(JSON.parse(savedCurrent));
+          } else {
+            setCurrentUserState(Array.isArray(uData) && uData.length > 0 ? uData[0] : null);
+          }
+        } catch {}
 
       } catch (error) {
         console.error("Erro crítico ao carregar dados:", error);
@@ -164,20 +177,40 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         });
         if (res.ok) {
           const saved = await res.json();
-          setUsers(prev => [...prev, saved]);
+          const list = [...users, saved];
+          setUsers(list);
+          try { localStorage.setItem('oliveira_users', JSON.stringify(list)); } catch {}
         } else {
-          setUsers(prev => [...prev, user]);
+          const list = [...users, user];
+          setUsers(list);
+          try { localStorage.setItem('oliveira_users', JSON.stringify(list)); } catch {}
         }
     } catch(e) {
-        setUsers(prev => [...prev, user]);
+        const list = [...users, user];
+        setUsers(list);
+        try { localStorage.setItem('oliveira_users', JSON.stringify(list)); } catch {}
     }
   };
   
   const updateUser = (user: User) => {
-    setUsers(users.map(u => u.id === user.id ? user : u));
+    const list = users.map(u => u.id === user.id ? user : u);
+    setUsers(list);
+    try { localStorage.setItem('oliveira_users', JSON.stringify(list)); } catch {}
+    // Se atualizar o usuário atual, refletir
+    if (currentUser && currentUser.id === user.id) {
+      setCurrentUserState(user);
+      try { localStorage.setItem('oliveira_current_user', JSON.stringify(user)); } catch {}
+    }
   };
   const deleteUser = (userName: string) => {
-    setUsers(users.filter(u => u.nome !== userName));
+    const list = users.filter(u => u.nome !== userName);
+    setUsers(list);
+    try { localStorage.setItem('oliveira_users', JSON.stringify(list)); } catch {}
+  };
+
+  const setCurrentUser = (user: User) => {
+    setCurrentUserState(user);
+    try { localStorage.setItem('oliveira_current_user', JSON.stringify(user)); } catch {}
   };
 
   const addBranch = async (branch: Branch) => {
@@ -286,6 +319,14 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
   const clearVehicles = () => setVehicles([]);
   const clearUsers = () => setUsers([]);
+  // Também limpar cache para evitar restauração
+  // Mantém usuário atual para exibir nome no cabeçalho; opcionalmente poderia limpar também
+  useEffect(() => {
+    // Hook para manter coerência caso lista de usuários esvazie
+    if (users.length === 0) {
+      try { localStorage.removeItem('oliveira_users'); } catch {}
+    }
+  }, [users]);
   const clearInspections = () => setInspections([]);
   
   const clearMockData = () => {
@@ -303,12 +344,14 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       users,
       branches,
       inspections,
+      currentUser,
       addVehicle,
       updateVehicle,
       deleteVehicle,
       addUser,
       updateUser,
       deleteUser,
+      setCurrentUser,
       addBranch,
       updateBranch,
       deleteBranch,
