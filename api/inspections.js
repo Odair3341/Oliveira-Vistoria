@@ -28,8 +28,10 @@ export default async function handler(req, res) {
     });
 
     if (req.method === 'GET') {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
       const result = await query('SELECT * FROM vistorias ORDER BY data_vistoria DESC');
-      const mapped = result.rows.map(mapRow);
+      
+      const mapped = result.rows.map(row => ({
       return res.status(200).json(mapped);
     }
 
