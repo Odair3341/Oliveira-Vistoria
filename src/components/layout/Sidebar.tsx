@@ -24,14 +24,15 @@ const menuItems = [
   { icon: Settings, label: 'Configurações', path: '/configuracoes' },
 ];
 
-export function Sidebar() {
+export function Sidebar({ className }: { className?: string }) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
     <aside 
       className={cn(
         "fixed left-0 top-0 z-40 h-screen bg-sidebar transition-all duration-300 ease-in-out flex flex-col",
-        collapsed ? "w-20" : "w-64"
+        collapsed ? "w-20" : "w-64",
+        className
       )}
     >
       {/* Logo */}

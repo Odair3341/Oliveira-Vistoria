@@ -75,18 +75,23 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const fetchData = async () => {
       try {
         // Helper to safely fetch JSON or fallback
+        const isProd = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD;
         const safeFetch = async (url: string, mockData: any, storageKey: string) => {
             try {
                 const res = await fetch(url);
                 const contentType = res.headers.get('content-type');
                 if (res.ok && contentType && contentType.includes('application/json')) {
                     const data = await res.json();
-                    if (Array.isArray(data) && data.length > 0) {
-                        // Quando a API retornar dados, usar e atualizar cache
-                        localStorage.setItem(storageKey, JSON.stringify(data));
-                        return data;
+                    // Em produção, sempre confiar na API (mesmo vazia)
+                    if (isProd) {
+                      localStorage.setItem(storageKey, JSON.stringify(Array.isArray(data) ? data : []));
+                      return Array.isArray(data) ? data : [];
                     }
-                    // Se a API retornar lista vazia, preservar dados locais ou mocks
+                    // Em desenvolvimento, se vier lista com itens, usar e cachear
+                    if (Array.isArray(data) && data.length > 0) {
+                      localStorage.setItem(storageKey, JSON.stringify(data));
+                      return data;
+                    }
                 }
             } catch (e) {}
             const saved = localStorage.getItem(storageKey);
@@ -97,11 +102,12 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             return mockData;
         };
 
+        const timestamp = Date.now();
         const [vData, uData, bData, iData] = await Promise.all([
-            safeFetch('/api/vehicles', mockVehicles, 'oliveira_vehicles'),
-            safeFetch('/api/users', mockUsers, 'oliveira_users'),
-            safeFetch('/api/branches', mockFiliais, 'oliveira_branches'),
-            safeFetch('/api/inspections', mockInspections, 'oliveira_inspections')
+            safeFetch(`/api/vehicles?t=${timestamp}`, mockVehicles, 'oliveira_vehicles'),
+            safeFetch(`/api/users?t=${timestamp}`, mockUsers, 'oliveira_users'),
+            safeFetch(`/api/branches?t=${timestamp}`, mockFiliais, 'oliveira_branches'),
+            safeFetch(`/api/inspections?t=${timestamp}`, mockInspections, 'oliveira_inspections')
         ]);
 
         setVehicles(vData);
@@ -245,14 +251,30 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(inspection)
         });
+        const isProd = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD;
         if (res.ok) {
           const saved = await res.json();
-          setInspections(prev => [...prev, saved]);
+          const list = [...inspections, saved];
+          setInspections(list);
+          try { localStorage.setItem('oliveira_inspections', JSON.stringify(list)); } catch {}
         } else {
-           setInspections(prev => [...prev, inspection]);
+          if (isProd) {
+            console.error('Falha ao salvar na API em produção');
+            return;
+          }
+          const list = [...inspections, inspection];
+          setInspections(list);
+          try { localStorage.setItem('oliveira_inspections', JSON.stringify(list)); } catch {}
         }
       } catch(e) {
-          setInspections(prev => [...prev, inspection]);
+          const isProd = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD;
+          if (isProd) {
+            console.error('Erro ao salvar na API em produção');
+            return;
+          }
+          const list = [...inspections, inspection];
+          setInspections(list);
+          try { localStorage.setItem('oliveira_inspections', JSON.stringify(list)); } catch {}
       }
   };
 
