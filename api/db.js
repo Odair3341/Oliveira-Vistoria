@@ -6,18 +6,27 @@ dotenv.config();
 
 const { Pool } = pg;
 
-// Log to check if DATABASE_URL is loaded
+// Log to check if DATABASE_URL is loaded (safely)
 if (process.env.DATABASE_URL) {
-  console.log('DATABASE_URL is set. Starts with:', process.env.DATABASE_URL.substring(0, 30));
+  console.log('DATABASE_URL is set.');
 } else {
-  console.error('DATABASE_URL is NOT set.');
+  console.error('CRITICAL: DATABASE_URL is NOT set.');
 }
 
+const connectionString = process.env.DATABASE_URL;
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL && process.env.DATABASE_URL.includes('localhost') ? false : {
-    rejectUnauthorized: false,
-  },
+  connectionString,
+  ssl: connectionString && connectionString.includes('localhost')
+    ? false
+    : { rejectUnauthorized: false } // Neon often works best with this, or true depending on CA availability in Vercel. 
+  // 'false' allows connection without setting up the specific CA, usually safe enough for this context if transport is encrypted.
+  // Given the query string has sslmode=require, this helps avoiding 'self signed certificate' errors.
+});
+
+// Listener for unexpected errors on idle interactions
+pool.on('error', (err, client) => {
+  console.error('Unexpected error on idle client', err);
 });
 
 export default async function query(text, params) {
@@ -29,6 +38,7 @@ export default async function query(text, params) {
     return res;
   } catch (error) {
     console.error('Error executing query', {
+      text,
       error: error.message,
       stack: error.stack,
     });
