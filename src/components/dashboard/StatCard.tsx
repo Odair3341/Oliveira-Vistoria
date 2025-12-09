@@ -94,10 +94,6 @@ export function StatCard({
                 {subtitle}
               </p>
             )}
-            <div className="flex items-center gap-1 mt-1">
-                <div className="h-1.5 w-1.5 rounded-full bg-warning animate-pulse" />
-                <span className="text-[10px] opacity-70">Modo offline</span>
-            </div>
           </div>
           <div className={cn(
             "flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg",

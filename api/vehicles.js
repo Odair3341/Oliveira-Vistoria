@@ -15,7 +15,7 @@ export default async function handler(req, res) {
         modelo: row.modelo,
         ano: row.ano,
         cor: row.cor,
-        km: row.km || 0,
+        kmAtual: row.km || 0,
         tipo: row.tipo || 'Carro',
         status: row.status,
         filial: row.filial_id || '' // Retornando ID por enquanto
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
         modelo: row.modelo,
         ano: row.ano,
         cor: row.cor,
-        km: row.km,
+        kmAtual: row.km,
         tipo: row.tipo,
         status: row.status,
         filial: row.filial_id
