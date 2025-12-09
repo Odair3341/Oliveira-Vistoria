@@ -40,7 +40,7 @@ export function StatCard({
   return (
     <div 
       className={cn(
-        "relative overflow-hidden rounded-xl p-5 shadow-card transition-all duration-300 card-hover",
+        "relative overflow-hidden rounded-xl p-3 sm:p-5 shadow-card transition-all duration-300 card-hover",
         variantStyles[variant],
         className
       )}
@@ -48,15 +48,15 @@ export function StatCard({
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <p className={cn(
-            "text-sm font-medium",
+            "text-xs sm:text-sm font-medium",
             variant === 'default' ? 'text-muted-foreground' : 'opacity-80'
           )}>
             {title}
           </p>
-          <p className="text-2xl font-bold tracking-tight">{value}</p>
+          <p className="text-xl sm:text-2xl font-bold tracking-tight">{value}</p>
           {subtitle && (
             <p className={cn(
-              "text-xs",
+              "text-[11px] sm:text-xs",
               variant === 'default' ? 'text-muted-foreground' : 'opacity-70'
             )}>
               {subtitle}
@@ -64,7 +64,7 @@ export function StatCard({
           )}
           {trend && (
             <div className={cn(
-              "inline-flex items-center gap-1 text-xs font-medium",
+              "inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium",
               trend.positive ? 'text-success' : 'text-destructive',
               variant !== 'default' && 'opacity-90'
             )}>
@@ -74,10 +74,10 @@ export function StatCard({
           )}
         </div>
         <div className={cn(
-          "flex h-12 w-12 items-center justify-center rounded-lg",
+          "flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg",
           iconVariantStyles[variant]
         )}>
-          <Icon className="h-6 w-6" />
+          <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
         </div>
       </div>
     </div>
