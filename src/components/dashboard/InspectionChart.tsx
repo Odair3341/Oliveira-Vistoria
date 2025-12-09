@@ -16,24 +16,33 @@ export function InspectionChart() {
   ];
 
   // Populate with real data if available
-  inspections.forEach(ins => {
-    const date = new Date(ins.dataVistoria);
-    const month = date.toLocaleString('pt-BR', { month: 'short' });
-    const monthIndex = data.findIndex(d => d.mes.toLowerCase() === month.toLowerCase().replace('.', ''));
-    
-    // Simple mapping for now, ideally use date-fns or similar
-    if (monthIndex >= 0) {
-      data[monthIndex].vistorias++;
-    } else {
-        // Fallback for current month/recent data mapping
-        // In a real app, we would generate the last 6 months dynamically based on current date
-        const monthStr = month.charAt(0).toUpperCase() + month.slice(1, 3);
-        const existing = data.find(d => d.mes === monthStr);
-        if (existing) {
-            existing.vistorias++;
+  if (Array.isArray(inspections) && inspections.length > 0) {
+    inspections.forEach(ins => {
+        if (!ins.dataVistoria) return;
+        try {
+            const date = new Date(ins.dataVistoria);
+            if (isNaN(date.getTime())) return;
+            
+            const month = date.toLocaleString('pt-BR', { month: 'short' });
+            const monthIndex = data.findIndex(d => d.mes.toLowerCase() === month.toLowerCase().replace('.', ''));
+            
+            // Simple mapping for now, ideally use date-fns or similar
+            if (monthIndex >= 0) {
+              data[monthIndex].vistorias++;
+            } else {
+                // Fallback for current month/recent data mapping
+                // In a real app, we would generate the last 6 months dynamically based on current date
+                const monthStr = month.charAt(0).toUpperCase() + month.slice(1, 3);
+                const existing = data.find(d => d.mes === monthStr);
+                if (existing) {
+                    existing.vistorias++;
+                }
+            }
+        } catch (e) {
+            console.error('Error processing inspection date:', e);
         }
-    }
-  });
+    });
+  }
 
   // Clean up static data if we have real data for specific months to avoid mixing too much
   // For this specific request "LIMPAR TUDO", if inspections is empty, we want 0 everywhere.
