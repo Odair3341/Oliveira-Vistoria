@@ -6,6 +6,13 @@ dotenv.config();
 
 const { Pool } = pg;
 
+// Log to check if DATABASE_URL is loaded
+if (process.env.DATABASE_URL) {
+  console.log('DATABASE_URL is set. Starts with:', process.env.DATABASE_URL.substring(0, 30));
+} else {
+  console.error('DATABASE_URL is NOT set.');
+}
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.DATABASE_URL && process.env.DATABASE_URL.includes('localhost') ? false : {
@@ -21,7 +28,10 @@ export default async function query(text, params) {
     // console.log('executed query', { text, duration, rows: res.rowCount });
     return res;
   } catch (error) {
-    console.error('Error executing query', error);
+    console.error('Error executing query', {
+      error: error.message,
+      stack: error.stack,
+    });
     throw error;
   }
 }

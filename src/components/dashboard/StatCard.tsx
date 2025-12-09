@@ -1,42 +1,91 @@
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, Loader2, RefreshCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface StatCardProps {
   title: string;
   value: string | number;
-  subtitle?: string;
   icon: LucideIcon;
   trend?: {
     value: number;
     positive: boolean;
   };
-  variant?: 'default' | 'primary' | 'success' | 'warning';
+  subtitle?: string;
+  variant?: 'default' | 'success' | 'warning' | 'info';
   className?: string;
+  loading?: boolean;
+  error?: boolean;
+  onRetry?: () => void;
 }
 
 const variantStyles = {
-  default: 'bg-card',
-  primary: 'bg-primary text-primary-foreground',
-  success: 'bg-success text-success-foreground',
-  warning: 'bg-warning text-warning-foreground',
+  default: "bg-card text-card-foreground border-border",
+  success: "bg-success/15 text-success-foreground border-success/20",
+  warning: "bg-warning/15 text-warning-foreground border-warning/20",
+  info: "bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/20",
 };
 
 const iconVariantStyles = {
-  default: 'bg-secondary text-secondary-foreground',
-  primary: 'bg-primary-foreground/20 text-primary-foreground',
-  success: 'bg-success-foreground/20 text-success-foreground',
-  warning: 'bg-warning-foreground/20 text-warning-foreground',
+  default: "bg-secondary text-secondary-foreground",
+  success: "bg-success text-success-foreground",
+  warning: "bg-warning text-warning-foreground",
+  info: "bg-blue-500 text-white",
 };
 
 export function StatCard({ 
   title, 
   value, 
-  subtitle, 
   icon: Icon, 
   trend, 
+  subtitle, 
   variant = 'default',
-  className 
+  className,
+  loading,
+  error,
+  onRetry
 }: StatCardProps) {
+  
+  if (loading) {
+    return (
+      <div 
+        className={cn(
+          "relative overflow-hidden rounded-xl p-3 sm:p-5 shadow-card transition-all duration-300 h-full flex flex-col justify-center",
+          variantStyles[variant],
+          className
+        )}
+      >
+        <div className="flex items-center gap-3">
+            <div className={cn("h-10 w-10 sm:h-12 sm:w-12 rounded-lg animate-pulse bg-muted/50")} />
+            <div className="space-y-2 flex-1">
+                <div className="h-4 w-24 bg-muted/50 rounded animate-pulse" />
+                <div className="h-6 w-16 bg-muted/50 rounded animate-pulse" />
+            </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+     return (
+      <div 
+        className={cn(
+          "relative overflow-hidden rounded-xl p-3 sm:p-5 shadow-card transition-all duration-300 h-full flex flex-col justify-center border-destructive/50 bg-destructive/5",
+          className
+        )}
+      >
+        <div className="flex items-center justify-between">
+            <div className="space-y-1">
+                <p className="text-xs sm:text-sm font-medium text-destructive">Erro ao carregar</p>
+                <Button variant="outline" size="sm" onClick={onRetry} className="h-7 text-xs">
+                    <RefreshCcw className="mr-1 h-3 w-3" /> Tentar
+                </Button>
+            </div>
+            <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-destructive/50" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div 
       className={cn(

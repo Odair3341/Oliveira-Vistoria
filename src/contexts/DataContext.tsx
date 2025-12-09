@@ -60,6 +60,11 @@ interface DataContextType {
   clearUsers: () => void;
   clearInspections: () => void;
   clearMockData: () => void;
+  
+  // Status
+  isLoading: boolean;
+  error: string | null;
+  refreshData: () => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -71,59 +76,55 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [branches, setBranches] = useState<Branch[]>([]);
   const [inspections, setInspections] = useState<Inspection[]>([]);
   const [currentUser, setCurrentUserState] = useState<User | null>(null);
+  
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch data from API on mount
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
         // Helper to safely fetch JSON or fallback
         const isProd = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD;
         const safeFetch = async (url: string, mockData: any, storageKey: string, label: string) => {
-            const isProd = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD;
-
             try {
-                // 1. Priorizar a busca na rede
                 const res = await fetch(url);
                 const contentType = res.headers.get('content-type');
-
                 if (res.ok && contentType && contentType.includes('application/json')) {
                     const data = await res.json();
-                    const dataToStore = Array.isArray(data) ? data : [];
-                    
-                    // 2. Se sucesso, atualizar o cache e retornar os dados
-                    localStorage.setItem(storageKey, JSON.stringify(dataToStore));
-                    return dataToStore;
-                } else {
-                    // Se a API falhar (ex: 500), logar mas continuar para o fallback
-                    console.error(`Falha ao buscar ${label} da API: ${res.status} ${res.statusText}`);
+                    // Em produção, sempre confiar na API (mesmo vazia)
                     if (isProd) {
-                        toast.error(`Serviço de ${label} indisponível. Tentando dados locais.`);
+                      localStorage.setItem(storageKey, JSON.stringify(Array.isArray(data) ? data : []));
+                      return Array.isArray(data) ? data : [];
+                    }
+                    // Em desenvolvimento, se vier lista com itens, usar e cachear
+                    if (Array.isArray(data) && data.length > 0) {
+                      localStorage.setItem(storageKey, JSON.stringify(data));
+                      return data;
+                    }
+                } else {
+                    if (isProd) {
+                        console.error(`Falha ao buscar ${label}: ${res.status} ${res.statusText}`);
+                        // Don't toast here, accumulate error
+                        throw new Error(`Falha ao carregar ${label}`);
                     }
                 }
             } catch (e) {
-                // Se a rede falhar (ex: offline), logar mas continuar para o fallback
                 console.error(`Erro de rede ao buscar ${label}:`, e);
                 if (isProd) {
-                    toast.error(`Erro de conexão ao buscar ${label}. Usando dados em cache, se disponíveis.`);
+                    throw e; // Re-throw to handle in main try/catch
                 }
             }
-
-            // 3. Fallback para o localStorage
             const saved = localStorage.getItem(storageKey);
             if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    if (Array.isArray(parsed)) {
-                        return parsed;
-                    }
-                } catch (e) {
-                    console.error(`Erro ao parsear dados do localStorage para ${label}:`, e);
-                }
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
             }
             
-            // 4. Fallback final para mock data (apenas em dev) ou array vazio
+            // Em produção, NÃO usar mock data se falhar, para evitar dados enganosos
             if (isProd) {
-                return []; 
+                throw new Error(`Sem dados para ${label}`); 
             }
             
             return mockData;
@@ -154,14 +155,23 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
       } catch (error) {
         console.error("Erro crítico ao carregar dados:", error);
-        // Last resort fallback
-        setVehicles(mockVehicles);
-        setUsers(mockUsers);
-        setBranches(mockFiliais);
-        setInspections(mockInspections);
+        setError("Não foi possível carregar os dados. Verifique sua conexão.");
+        
+        // Em desenvolvimento, ainda usar mocks como fallback final
+        const isProd = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD;
+        if (!isProd) {
+            setVehicles(mockVehicles);
+            setUsers(mockUsers);
+            setBranches(mockFiliais);
+            setInspections(mockInspections);
+            setError(null); // Clear error in dev if fallback works
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -410,7 +420,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       clearVehicles,
       clearUsers,
       clearInspections,
-      clearMockData
+      clearMockData,
+      isLoading,
+      error,
+      refreshData: fetchData
     }}>
       {children}
     </DataContext.Provider>

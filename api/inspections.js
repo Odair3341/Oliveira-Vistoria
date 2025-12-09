@@ -202,7 +202,12 @@ export default async function handler(req, res) {
     res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   } catch (error) {
-    console.error(error);
+    console.error({
+      message: 'Error in inspections handler',
+      error: error.message,
+      stack: error.stack,
+      method: req.method,
+    });
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
