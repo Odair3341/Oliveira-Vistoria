@@ -4,6 +4,8 @@ import { mockUsers } from '@/data/mockUsers';
 import { mockFiliais } from '@/data/mockFiliais';
 import { mockInspections, Inspection } from '@/data/mockInspections';
 
+import { toast } from 'sonner';
+
 // Define Types (you might want to import these from a central types file eventually)
 interface User {
   id: string;
@@ -76,7 +78,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       try {
         // Helper to safely fetch JSON or fallback
         const isProd = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD;
-        const safeFetch = async (url: string, mockData: any, storageKey: string) => {
+        const safeFetch = async (url: string, mockData: any, storageKey: string, label: string) => {
             try {
                 const res = await fetch(url);
                 const contentType = res.headers.get('content-type');
@@ -92,22 +94,38 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                       localStorage.setItem(storageKey, JSON.stringify(data));
                       return data;
                     }
+                } else {
+                    if (isProd) {
+                        console.error(`Falha ao buscar ${label}: ${res.status} ${res.statusText}`);
+                        toast.error(`Erro ao carregar ${label}. Verifique sua conexão.`);
+                    }
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.error(`Erro de rede ao buscar ${label}:`, e);
+                if (isProd) {
+                    toast.error(`Erro de conexão ao buscar ${label}.`);
+                }
+            }
             const saved = localStorage.getItem(storageKey);
             if (saved) {
                 const parsed = JSON.parse(saved);
                 if (Array.isArray(parsed) && parsed.length > 0) return parsed;
             }
+            
+            // Em produção, NÃO usar mock data se falhar, para evitar dados enganosos
+            if (isProd) {
+                return []; 
+            }
+            
             return mockData;
         };
 
         const timestamp = Date.now();
         const [vData, uData, bData, iData] = await Promise.all([
-            safeFetch(`/api/vehicles?t=${timestamp}`, mockVehicles, 'oliveira_vehicles_v2'),
-            safeFetch(`/api/users?t=${timestamp}`, mockUsers, 'oliveira_users_v2'),
-            safeFetch(`/api/branches?t=${timestamp}`, mockFiliais, 'oliveira_branches_v2'),
-            safeFetch(`/api/inspections?t=${timestamp}`, mockInspections, 'oliveira_inspections_v2')
+            safeFetch(`/api/vehicles?t=${timestamp}`, mockVehicles, 'oliveira_vehicles_v2', 'veículos'),
+            safeFetch(`/api/users?t=${timestamp}`, mockUsers, 'oliveira_users_v2', 'usuários'),
+            safeFetch(`/api/branches?t=${timestamp}`, mockFiliais, 'oliveira_branches_v2', 'filiais'),
+            safeFetch(`/api/inspections?t=${timestamp}`, mockInspections, 'oliveira_inspections_v2', 'vistorias')
         ]);
 
         setVehicles(vData);
