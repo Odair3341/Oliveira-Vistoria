@@ -66,21 +66,45 @@ export function StatCard({
   }
 
   if (error) {
-     return (
+    // Se houver erro, renderizar o card normalmente (com dados de mock/cache)
+    // mas adicionar um indicador visual sutil
+    return (
       <div 
         className={cn(
-          "relative overflow-hidden rounded-xl p-3 sm:p-5 shadow-card transition-all duration-300 h-full flex flex-col justify-center border-destructive/50 bg-destructive/5",
-          className
+          "relative overflow-hidden rounded-xl p-3 sm:p-5 shadow-card transition-all duration-300 card-hover",
+          variantStyles[variant],
+          className,
+          "border-warning/50" // Indicador sutil de aviso
         )}
       >
-        <div className="flex items-center justify-between">
-            <div className="space-y-1">
-                <p className="text-xs sm:text-sm font-medium text-destructive">Erro ao carregar</p>
-                <Button variant="outline" size="sm" onClick={onRetry} className="h-7 text-xs">
-                    <RefreshCcw className="mr-1 h-3 w-3" /> Tentar
-                </Button>
+        <div className="flex items-start justify-between">
+          <div className="space-y-2">
+            <p className={cn(
+              "text-xs sm:text-sm font-medium",
+              variant === 'default' ? 'text-muted-foreground' : 'opacity-80'
+            )}>
+              {title}
+            </p>
+            <p className="text-xl sm:text-2xl font-bold tracking-tight">{value}</p>
+            {subtitle && (
+              <p className={cn(
+                "text-[11px] sm:text-xs",
+                variant === 'default' ? 'text-muted-foreground' : 'opacity-70'
+              )}>
+                {subtitle}
+              </p>
+            )}
+            <div className="flex items-center gap-1 mt-1">
+                <div className="h-1.5 w-1.5 rounded-full bg-warning animate-pulse" />
+                <span className="text-[10px] opacity-70">Modo offline</span>
             </div>
-            <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-destructive/50" />
+          </div>
+          <div className={cn(
+            "flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg",
+            iconVariantStyles[variant]
+          )}>
+            <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+          </div>
         </div>
       </div>
     );
