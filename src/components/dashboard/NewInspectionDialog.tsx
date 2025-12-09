@@ -112,7 +112,7 @@ export function NewInspectionDialog() {
           Nova Vistoria
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[500px] w-[96vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Nova Vistoria</DialogTitle>
           <DialogDescription>
@@ -125,60 +125,60 @@ export function NewInspectionDialog() {
             <div className="space-y-4 border-b pb-4">
               <h4 className="font-medium text-sm text-muted-foreground">Dados do Veículo</h4>
               
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
                 <Label htmlFor="placa" className="text-right">Placa</Label>
                 <Input 
                   id="placa" 
                   placeholder="ABC-1234" 
-                  className="col-span-3" 
+                  className="sm:col-span-3" 
                   required 
                   value={placa}
                   onChange={(e) => setPlaca(e.target.value)}
                 />
               </div>
               
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
                 <Label htmlFor="modelo" className="text-right">Modelo</Label>
                 <Input 
                   id="modelo" 
                   placeholder="Ex: Strada" 
-                  className="col-span-3" 
+                  className="sm:col-span-3" 
                   required 
                   value={modelo}
                   onChange={(e) => setModelo(e.target.value)}
                 />
               </div>
               
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
                 <Label htmlFor="marca" className="text-right">Marca</Label>
                 <Input 
                   id="marca" 
                   placeholder="Ex: Fiat" 
-                  className="col-span-3" 
+                  className="sm:col-span-3" 
                   required 
                   value={marca}
                   onChange={(e) => setMarca(e.target.value)}
                 />
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
                 <Label htmlFor="km" className="text-right">Hodômetro (KM Atual)</Label>
                 <Input 
                   id="km" 
                   placeholder="Ex: 150.000" 
-                  className="col-span-3" 
+                  className="sm:col-span-3" 
                   required 
                   value={km}
                   onChange={(e) => setKm(e.target.value)}
                 />
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
                 <Label htmlFor="dataVistoria" className="text-right">Data Vistoria</Label>
                 <Input 
                   id="dataVistoria" 
                   type="date"
-                  className="col-span-3" 
+                  className="sm:col-span-3" 
                   required 
                   value={dataVistoria}
                   onChange={(e) => setDataVistoria(e.target.value)}
@@ -190,10 +190,10 @@ export function NewInspectionDialog() {
             <div className="space-y-4 border-b pb-4">
               <h4 className="font-medium text-sm text-muted-foreground">Localização da Empresa</h4>
               
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
                 <Label htmlFor="empresa" className="text-right">Empresa</Label>
                 <Select onValueChange={setSelectedEmpresa} value={selectedEmpresa}>
-                  <SelectTrigger className="col-span-3">
+                  <SelectTrigger className="sm:col-span-3">
                     <SelectValue placeholder="Selecione a empresa" />
                   </SelectTrigger>
                   <SelectContent>
@@ -204,14 +204,14 @@ export function NewInspectionDialog() {
                 </Select>
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
                 <Label htmlFor="filial" className="text-right">Cidade/Filial</Label>
                 <Select 
                   onValueChange={setSelectedFilial} 
                   value={selectedFilial}
                   disabled={!selectedEmpresa}
                 >
-                  <SelectTrigger className="col-span-3">
+                  <SelectTrigger className="sm:col-span-3">
                     <SelectValue placeholder="Selecione a cidade" />
                   </SelectTrigger>
                   <SelectContent>

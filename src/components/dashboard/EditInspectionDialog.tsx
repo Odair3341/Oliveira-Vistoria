@@ -171,7 +171,7 @@ export function EditInspectionDialog({ open, onOpenChange, inspection }: EditIns
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] w-[96vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Editar Vistoria - {inspection.placa}</DialogTitle>
           <DialogDescription>
