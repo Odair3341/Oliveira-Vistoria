@@ -17,11 +17,6 @@ const connectionString = process.env.DATABASE_URL;
 
 const pool = new Pool({
   connectionString,
-  ssl: connectionString && connectionString.includes('localhost')
-    ? false
-    : { rejectUnauthorized: false } // Neon often works best with this, or true depending on CA availability in Vercel. 
-  // 'false' allows connection without setting up the specific CA, usually safe enough for this context if transport is encrypted.
-  // Given the query string has sslmode=require, this helps avoiding 'self signed certificate' errors.
 });
 
 // Listener for unexpected errors on idle interactions
