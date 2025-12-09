@@ -13,13 +13,12 @@ if (process.env.DATABASE_URL) {
   console.error('CRITICAL: DATABASE_URL is NOT set.');
 }
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_CgPptmNM8vk7@ep-empty-forest-acjt0u7j-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+// FORCE CORRECT URL - IGNORING ENV VAR FOR NOW TO FIX PROD AUTH ERROR
+const connectionString = 'postgresql://neondb_owner:npg_CgPptmNM8vk7@ep-empty-forest-acjt0u7j-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
 
 const pool = new Pool({
   connectionString,
-  ssl: connectionString.includes('localhost')
-    ? false
-    : { rejectUnauthorized: true },
+  ssl: { rejectUnauthorized: true },
 });
 
 // Listener for unexpected errors on idle interactions
