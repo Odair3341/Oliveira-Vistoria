@@ -122,10 +122,9 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                 if (Array.isArray(parsed) && parsed.length > 0) return parsed;
             }
             
-            // Em produção, usar mock data se falhar, para evitar tela branca, mas mantendo aviso de erro
+            // Em produção, não usar mocks: retornar vazio para evitar dados divergentes
             if (isProd) {
-                // Se falhar e não tiver cache, usar mock
-                return mockData;
+                return [];
             }
             
             return mockData;

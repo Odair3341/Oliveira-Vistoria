@@ -8,7 +8,7 @@ import { useData } from '@/contexts/DataContext';
 import { ClipboardList, DollarSign, CheckCircle2, Clock } from 'lucide-react';
 
 const Index = () => {
-  const { inspections, isLoading, error, refreshData } = useData();
+  const { inspections, isLoading, error } = useData();
   
   // Calculate stats dynamically based on current context data
   const total = inspections.length;
@@ -42,7 +42,6 @@ const Index = () => {
           className="animate-slide-up stagger-1"
           loading={isLoading}
           error={!!error}
-          onRetry={refreshData}
         />
         <StatCard
           title="Valor Total"
@@ -53,7 +52,6 @@ const Index = () => {
           className="animate-slide-up stagger-2"
           loading={isLoading}
           error={!!error}
-          onRetry={refreshData}
         />
         <StatCard
           title="Concluídas"
@@ -64,7 +62,6 @@ const Index = () => {
           className="animate-slide-up stagger-3"
           loading={isLoading}
           error={!!error}
-          onRetry={refreshData}
         />
         <StatCard
           title="Pendentes"
@@ -75,7 +72,6 @@ const Index = () => {
           className="animate-slide-up stagger-4"
           loading={isLoading}
           error={!!error}
-          onRetry={refreshData}
         />
       </div>
 
