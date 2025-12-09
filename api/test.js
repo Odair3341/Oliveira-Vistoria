@@ -4,33 +4,31 @@ import pg from 'pg';
 
 export default async function handler(req, res) {
   try {
-    const connectionString = process.env.DATABASE_URL || '';
-    
-    // Parse connection string manually to debug what Vercel sees
-    let debugInfo = {
-      length: connectionString.length,
-      startsWithPostgres: connectionString.startsWith('postgres'),
-      hasSslMode: connectionString.includes('sslmode'),
-    };
+    const { Pool } = pg;
+    // Hardcoded string from db.js logic (replicated here for independent verification)
+    const hardcodedString = 'postgresql://neondb_owner:npg_CgPptmNM8vk7@ep-empty-forest-acjt0u7j-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+
+    let directTest = 'Not attempted';
+    let directError = null;
 
     try {
-        // Simple regex to extract user and host (avoiding password)
-        const match = connectionString.match(/postgres(?:ql)?:\/\/([^:]+):([^@]+)@([^/]+)/);
-        if (match) {
-            debugInfo.user = match[1];
-            debugInfo.host = match[3];
-            debugInfo.passwordFirstChar = match[2] ? match[2][0] : null;
-            debugInfo.passwordLength = match[2] ? match[2].length : 0;
-        }
+        const pool2 = new Pool({
+            connectionString: hardcodedString,
+            ssl: { rejectUnauthorized: true }
+        });
+        const r2 = await pool2.query('SELECT NOW() as now');
+        await pool2.end();
+        directTest = 'Success: ' + r2.rows[0].now;
     } catch (e) {
-        debugInfo.parseError = e.message;
+        directTest = 'Failed';
+        directError = e.message;
     }
 
     const hasUrl = !!process.env.DATABASE_URL;
     let dbStatus = 'Not tested';
     let dbError = null;
 
-    if (hasUrl) {
+    if (true) { // Always try query from db.js
       try {
         const result = await query('SELECT NOW() as now');
         dbStatus = 'Connected';
@@ -41,13 +39,12 @@ export default async function handler(req, res) {
     }
 
     res.status(200).json({ 
-      message: 'API Debug', 
-      env: {
-        hasDbUrl: hasUrl,
-        nodeVersion: process.version,
+      message: 'API Debug V2', 
+      directConnectionTest: {
+          status: directTest,
+          error: directError
       },
-      connectionDebug: debugInfo,
-      db: {
+      dbJsTest: {
         status: dbStatus,
         error: dbError
       }
