@@ -2,7 +2,14 @@ import query from './db.js';
 
 export default async function handler(req, res) {
   try {
-    const mapRow = (row) => ({
+    const mapRow = (row) => {
+        const kmd = Number(row.km_deslocamento) || 0;
+        const vk = Number(row.valor_km) || 0;
+        const ped = Number(row.pedagio) || 0;
+        const aa = Number(row.auto_avaliar) || 0;
+        const ca = Number(row.caltelar) || 0;
+        const computedTotal = (kmd * vk) + ped + aa + ca;
+        return ({
         id: String(row.id),
         qtd: 1, // Default
         placa: row.placa,
@@ -20,7 +27,7 @@ export default async function handler(req, res) {
         autoAvaliar: Number(row.auto_avaliar) || 0,
         caltelar: Number(row.caltelar) || 0,
         pedagio: Number(row.pedagio) || 0,
-        total: Number(row.valor_total) || 0,
+        total: computedTotal,
         dataVistoria: row.data_vistoria ? new Date(row.data_vistoria).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
         status: row.status,
         veiculoId: row.veiculo_id,
@@ -64,6 +71,13 @@ export default async function handler(req, res) {
           }
       }
 
+      const kmdIns = Number(kmDeslocamento) || 0;
+      const vkIns = Number(valorKm) || 0;
+      const pedIns = Number(pedagio) || 0;
+      const aaIns = Number(autoAvaliar) || 0;
+      const caIns = Number(caltelar) || 0;
+      const totalIns = (kmdIns * vkIns) + pedIns + aaIns + caIns;
+
       const result = await query(
         `INSERT INTO vistorias (
             veiculo_id, usuario_id, data_vistoria, status, observacoes, items, 
@@ -74,7 +88,7 @@ export default async function handler(req, res) {
         [
           veiculoId, usuarioId, dataVistoria, status, observacoes, JSON.stringify(items), 
           placa, modelo, marca, kmRodado || 0, filial, empresa, ano,
-          origem || '', destino || '', kmDeslocamento || 0, valorKm || 0, pedagio || 0, autoAvaliar || 0, caltelar || 0, total || 0
+          origem || '', destino || '', kmdIns, vkIns, pedIns, aaIns, caIns, totalIns
         ]
       );
       
@@ -95,6 +109,13 @@ export default async function handler(req, res) {
         }
 
         // 1. Update Inspection
+        const kmdUp = Number(kmDeslocamento) || 0;
+        const vkUp = Number(valorKm) || 0;
+        const pedUp = Number(pedagio) || 0;
+        const aaUp = Number(autoAvaliar) || 0;
+        const caUp = Number(caltelar) || 0;
+        const totalUp = (kmdUp * vkUp) + pedUp + aaUp + caUp;
+
         const result = await query(
             `UPDATE vistorias SET 
                 placa = $1, 
@@ -117,8 +138,8 @@ export default async function handler(req, res) {
              WHERE id = $18 RETURNING *`,
             [
                 placa, modelo, marca, kmRodado || 0, filial, empresa, ano, 
-                origem || '', destino || '', kmDeslocamento || 0, valorKm || 0, pedagio || 0, 
-                autoAvaliar || 0, caltelar || 0, total || 0, status, dataVistoria,
+                origem || '', destino || '', kmdUp, vkUp, pedUp, 
+                aaUp, caUp, totalUp, status, dataVistoria,
                 id
             ]
         );
