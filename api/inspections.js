@@ -37,7 +37,15 @@ export default async function handler(req, res) {
 
     if (req.method === 'GET') {
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-      const result = await query('SELECT * FROM vistorias ORDER BY data_vistoria DESC');
+      const queryText = `
+        SELECT 
+          id, placa, km_rodado, km_deslocamento, valor_km, ano_veiculo, modelo, marca, 
+          filial_nome, empresa, estado_uf, origem, destino, auto_avaliar, caltelar, 
+          pedagio, data_vistoria, status, veiculo_id, items 
+        FROM vistorias 
+        ORDER BY data_vistoria DESC
+      `;
+      const result = await query(queryText);
       const mapped = result.rows.map(mapRow);
       return res.status(200).json(mapped);
     }
