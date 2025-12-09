@@ -104,10 +104,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
         const timestamp = Date.now();
         const [vData, uData, bData, iData] = await Promise.all([
-            safeFetch(`/api/vehicles?t=${timestamp}`, mockVehicles, 'oliveira_vehicles'),
-            safeFetch(`/api/users?t=${timestamp}`, mockUsers, 'oliveira_users'),
-            safeFetch(`/api/branches?t=${timestamp}`, mockFiliais, 'oliveira_branches'),
-            safeFetch(`/api/inspections?t=${timestamp}`, mockInspections, 'oliveira_inspections')
+            safeFetch(`/api/vehicles?t=${timestamp}`, mockVehicles, 'oliveira_vehicles_v2'),
+            safeFetch(`/api/users?t=${timestamp}`, mockUsers, 'oliveira_users_v2'),
+            safeFetch(`/api/branches?t=${timestamp}`, mockFiliais, 'oliveira_branches_v2'),
+            safeFetch(`/api/inspections?t=${timestamp}`, mockInspections, 'oliveira_inspections_v2')
         ]);
 
         setVehicles(vData);
@@ -117,7 +117,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
         // Inicializar usuário atual
         try {
-          const savedCurrent = localStorage.getItem('oliveira_current_user');
+          const savedCurrent = localStorage.getItem('oliveira_current_user_v2');
           if (savedCurrent) {
             setCurrentUserState(JSON.parse(savedCurrent));
           } else {
@@ -152,11 +152,11 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       } else {
         // Fallback local
         setVehicles(prev => [...prev, vehicle]);
-        localStorage.setItem('oliveira_vehicles', JSON.stringify([...vehicles, vehicle]));
+        localStorage.setItem('oliveira_vehicles_v2', JSON.stringify([...vehicles, vehicle]));
       }
     } catch (e) {
       setVehicles(prev => [...prev, vehicle]);
-      localStorage.setItem('oliveira_vehicles', JSON.stringify([...vehicles, vehicle]));
+      localStorage.setItem('oliveira_vehicles_v2', JSON.stringify([...vehicles, vehicle]));
     }
   };
   
@@ -185,38 +185,38 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
           const saved = await res.json();
           const list = [...users, saved];
           setUsers(list);
-          try { localStorage.setItem('oliveira_users', JSON.stringify(list)); } catch {}
+          try { localStorage.setItem('oliveira_users_v2', JSON.stringify(list)); } catch {}
         } else {
           const list = [...users, user];
           setUsers(list);
-          try { localStorage.setItem('oliveira_users', JSON.stringify(list)); } catch {}
+          try { localStorage.setItem('oliveira_users_v2', JSON.stringify(list)); } catch {}
         }
     } catch(e) {
         const list = [...users, user];
         setUsers(list);
-        try { localStorage.setItem('oliveira_users', JSON.stringify(list)); } catch {}
+        try { localStorage.setItem('oliveira_users_v2', JSON.stringify(list)); } catch {}
     }
   };
   
   const updateUser = (user: User) => {
     const list = users.map(u => u.id === user.id ? user : u);
     setUsers(list);
-    try { localStorage.setItem('oliveira_users', JSON.stringify(list)); } catch {}
+    try { localStorage.setItem('oliveira_users_v2', JSON.stringify(list)); } catch {}
     // Se atualizar o usuário atual, refletir
     if (currentUser && currentUser.id === user.id) {
       setCurrentUserState(user);
-      try { localStorage.setItem('oliveira_current_user', JSON.stringify(user)); } catch {}
+      try { localStorage.setItem('oliveira_current_user_v2', JSON.stringify(user)); } catch {}
     }
   };
   const deleteUser = (userName: string) => {
     const list = users.filter(u => u.nome !== userName);
     setUsers(list);
-    try { localStorage.setItem('oliveira_users', JSON.stringify(list)); } catch {}
+    try { localStorage.setItem('oliveira_users_v2', JSON.stringify(list)); } catch {}
   };
 
   const setCurrentUser = (user: User) => {
     setCurrentUserState(user);
-    try { localStorage.setItem('oliveira_current_user', JSON.stringify(user)); } catch {}
+    try { localStorage.setItem('oliveira_current_user_v2', JSON.stringify(user)); } catch {}
   };
 
   const addBranch = async (branch: Branch) => {
@@ -256,7 +256,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
           const saved = await res.json();
           const list = [...inspections, saved];
           setInspections(list);
-          try { localStorage.setItem('oliveira_inspections', JSON.stringify(list)); } catch {}
+          try { localStorage.setItem('oliveira_inspections_v2', JSON.stringify(list)); } catch {}
         } else {
           if (isProd) {
             console.error('Falha ao salvar na API em produção');
@@ -264,7 +264,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
           }
           const list = [...inspections, inspection];
           setInspections(list);
-          try { localStorage.setItem('oliveira_inspections', JSON.stringify(list)); } catch {}
+          try { localStorage.setItem('oliveira_inspections_v2', JSON.stringify(list)); } catch {}
         }
       } catch(e) {
           const isProd = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD;
@@ -274,7 +274,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
           }
           const list = [...inspections, inspection];
           setInspections(list);
-          try { localStorage.setItem('oliveira_inspections', JSON.stringify(list)); } catch {}
+          try { localStorage.setItem('oliveira_inspections_v2', JSON.stringify(list)); } catch {}
       }
   };
 
@@ -295,24 +295,24 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             if (newDataRes.ok) {
                 const allInspections = await newDataRes.json();
                 setInspections(allInspections);
-                try { localStorage.setItem('oliveira_inspections', JSON.stringify(allInspections)); } catch {}
+                try { localStorage.setItem('oliveira_inspections_v2', JSON.stringify(allInspections)); } catch {}
             } else {
                  // Se o re-fetch falhar, faz o update local como fallback
                  const updatedList = inspections.map(i => i.id === inspection.id ? inspection : i);
                  setInspections(updatedList);
-                 try { localStorage.setItem('oliveira_inspections', JSON.stringify(updatedList)); } catch {}
+                 try { localStorage.setItem('oliveira_inspections_v2', JSON.stringify(updatedList)); } catch {}
             }
         } else {
              // Se o PUT falhar, faz o update local como fallback
              const updatedList = inspections.map(i => i.id === inspection.id ? inspection : i);
              setInspections(updatedList);
-             try { localStorage.setItem('oliveira_inspections', JSON.stringify(updatedList)); } catch {}
+             try { localStorage.setItem('oliveira_inspections_v2', JSON.stringify(updatedList)); } catch {}
         }
     } catch (e) {
          // Se tudo falhar, faz o update local como fallback
          const updatedList = inspections.map(i => i.id === inspection.id ? inspection : i);
          setInspections(updatedList);
-         try { localStorage.setItem('oliveira_inspections', JSON.stringify(updatedList)); } catch {}
+         try { localStorage.setItem('oliveira_inspections_v2', JSON.stringify(updatedList)); } catch {}
     }
   };
   const deleteInspection = async (id: string) => {
@@ -322,19 +322,19 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         });
         const filtered = inspections.filter(i => i.id !== id);
         setInspections(filtered);
-        localStorage.setItem('oliveira_inspections', JSON.stringify(filtered));
+        localStorage.setItem('oliveira_inspections_v2', JSON.stringify(filtered));
         if (res.ok) {
           const refresh = await fetch('/api/inspections');
           if (refresh.ok) {
             const data = await refresh.json();
             setInspections(data);
-            localStorage.setItem('oliveira_inspections', JSON.stringify(data));
+            localStorage.setItem('oliveira_inspections_v2', JSON.stringify(data));
           }
         }
     } catch (e) {
          const filtered = inspections.filter(i => i.id !== id);
          setInspections(filtered);
-         localStorage.setItem('oliveira_inspections', JSON.stringify(filtered));
+         localStorage.setItem('oliveira_inspections_v2', JSON.stringify(filtered));
     }
   };
 
@@ -346,7 +346,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // Hook para manter coerência caso lista de usuários esvazie
     if (users.length === 0) {
-      try { localStorage.removeItem('oliveira_users'); } catch {}
+      try { localStorage.removeItem('oliveira_users_v2'); } catch {}
     }
   }, [users]);
   const clearInspections = () => setInspections([]);
