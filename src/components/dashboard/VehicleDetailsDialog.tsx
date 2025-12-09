@@ -65,7 +65,7 @@ export function VehicleDetailsDialog({ open, onOpenChange, vehicle }: VehicleDet
               <span className="text-sm text-muted-foreground flex items-center gap-1">
                 <Gauge className="h-3.5 w-3.5" /> Quilometragem
               </span>
-              <p className="font-medium text-base">{vehicle.kmAtual.toLocaleString('pt-BR')} km</p>
+              <p className="font-medium text-base">{Number(vehicle.kmAtual || 0).toLocaleString('pt-BR')} km</p>
             </div>
             <div className="space-y-1 col-span-2">
               <span className="text-sm text-muted-foreground flex items-center gap-1">

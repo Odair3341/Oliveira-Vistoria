@@ -61,7 +61,7 @@ export function InspectionDetailsDialog({ open, onOpenChange, inspection }: Insp
               <span className="text-sm text-muted-foreground flex items-center gap-1">
                 <Gauge className="h-3.5 w-3.5" /> KM Registrado
               </span>
-              <p className="font-medium text-base">{inspection.kmRodado.toLocaleString('pt-BR')} km</p>
+              <p className="font-medium text-base">{Number(inspection.kmRodado || 0).toLocaleString('pt-BR')} km</p>
             </div>
             <div className="space-y-1">
               <span className="text-sm text-muted-foreground flex items-center gap-1">

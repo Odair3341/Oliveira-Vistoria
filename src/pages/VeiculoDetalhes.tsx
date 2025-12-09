@@ -43,7 +43,7 @@ const VeiculoDetalhes = () => {
                 <p><strong>Placa:</strong> {vehicle.placa}</p>
                 <p><strong>Modelo:</strong> {vehicle.marca} {vehicle.modelo}</p>
                 <p><strong>Ano:</strong> {vehicle.ano}</p>
-                <p><strong>KM Atual:</strong> {vehicle.kmAtual.toLocaleString('pt-BR')} km</p>
+                <p><strong>KM Atual:</strong> {Number(vehicle.kmAtual || 0).toLocaleString('pt-BR')} km</p>
               </CardContent>
             </Card>
           </div>

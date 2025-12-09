@@ -43,7 +43,7 @@ const VistoriaDetalhes = () => {
                 <p><strong>Placa:</strong> {inspection.placa}</p>
                 <p><strong>Modelo:</strong> {inspection.marca} {inspection.modelo}</p>
                 <p><strong>Ano:</strong> {inspection.ano}</p>
-                <p><strong>KM Rodado:</strong> {inspection.kmRodado.toLocaleString('pt-BR')} km</p>
+                <p><strong>KM Rodado:</strong> {Number(inspection.kmRodado || 0).toLocaleString('pt-BR')} km</p>
                 <p><strong>Data da Vistoria:</strong> {new Date(inspection.dataVistoria).toLocaleDateString('pt-BR')}</p>
               </CardContent>
             </Card>
