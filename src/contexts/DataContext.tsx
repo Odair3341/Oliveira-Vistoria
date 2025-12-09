@@ -89,13 +89,16 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         const isProd = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD;
         const safeFetch = async (url: string, mockData: any, storageKey: string, label: string) => {
             try {
-                const res = await fetch(url);
+                // Add cache-busting param
+                const cacheBuster = `&_cb=${Date.now()}`;
+                const res = await fetch(url + cacheBuster);
                 const contentType = res.headers.get('content-type');
                 if (res.ok && contentType && contentType.includes('application/json')) {
                     const data = await res.json();
                     // Em produção, sempre confiar na API (mesmo vazia)
                     if (isProd) {
-                      localStorage.setItem(storageKey, JSON.stringify(Array.isArray(data) ? data : []));
+                      // Limpar cache antigo para garantir consistência
+                      localStorage.removeItem(storageKey);
                       return Array.isArray(data) ? data : [];
                     }
                     // Em desenvolvimento, se vier lista com itens, usar e cachear
@@ -116,18 +119,16 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                     throw e; // Re-throw to handle in main try/catch
                 }
             }
-            const saved = localStorage.getItem(storageKey);
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            // Fallback apenas se não estiver em produção ou se falhar rede
+            if (!isProd) {
+                const saved = localStorage.getItem(storageKey);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+                return mockData;
             }
-            
-            // Em produção, não usar mocks: retornar vazio para evitar dados divergentes
-            if (isProd) {
-                return [];
-            }
-            
-            return mockData;
+            return [];
         };
 
         const timestamp = Date.now();

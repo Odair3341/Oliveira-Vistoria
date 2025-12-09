@@ -215,7 +215,7 @@ const Veiculos = () => {
                   <Gauge className="h-4 w-4" />
                   Km Atual
                 </span>
-                <span className="font-medium">{vehicle.kmAtual.toLocaleString('pt-BR')} km</span>
+                <span className="font-medium">{Number(vehicle.kmAtual || 0).toLocaleString('pt-BR')} km</span>
               </div>
             </div>
           </div>

@@ -84,27 +84,27 @@ export function InspectionDetailsDialog({ open, onOpenChange, inspection }: Insp
                 <div>
                   <span className="text-xs text-muted-foreground block">Deslocamento</span>
                   <p className="font-medium">
-                    {inspection.valorKm ? `R$ ${inspection.valorKm.toFixed(2)}` : 'R$ 0,00'}
+                    {Number(inspection.valorKm || 0) > 0 ? `R$ ${Number(inspection.valorKm).toFixed(2)}` : 'R$ 0,00'}
                     <span className="text-xs text-muted-foreground font-normal ml-1">
-                       x {(inspection.kmDeslocamento || 0).toLocaleString('pt-BR')} km
+                      x {Number(inspection.kmDeslocamento || 0).toLocaleString('pt-BR')} km
                     </span>
                   </p>
                   <p className="text-sm text-muted-foreground">
-                     = R$ {((inspection.kmDeslocamento || 0) * (inspection.valorKm || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    = R$ {Number(((inspection.kmDeslocamento || 0) * (inspection.valorKm || 0))).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
                 
                 <div>
                   <span className="text-xs text-muted-foreground block">Pedágio</span>
                   <p className="font-medium">
-                    R$ {(inspection.pedagio || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    R$ {Number(inspection.pedagio || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
 
                 <div className="pt-2 border-t border-border/30">
                   <span className="text-xs font-medium block">Subtotal Reembolso</span>
                   <p className="font-bold text-primary">
-                    R$ {(((inspection.kmDeslocamento || 0) * (inspection.valorKm || 0)) + (inspection.pedagio || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    R$ {Number(((inspection.kmDeslocamento || 0) * (inspection.valorKm || 0)) + (inspection.pedagio || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
               </div>
@@ -127,7 +127,7 @@ export function InspectionDetailsDialog({ open, onOpenChange, inspection }: Insp
                 <div className="pt-2 border-t border-border/30">
                   <span className="text-xs font-medium block">Subtotal Serviços</span>
                   <p className="font-bold text-primary">
-                    R$ {((inspection.autoAvaliar || 0) + (inspection.caltelar || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    R$ {Number((inspection.autoAvaliar || 0) + (inspection.caltelar || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
               </div>
@@ -136,7 +136,7 @@ export function InspectionDetailsDialog({ open, onOpenChange, inspection }: Insp
             <div className="mt-4 pt-4 border-t border-border flex justify-between items-center bg-primary/5 p-3 rounded-md">
               <span className="font-bold text-sm">VALOR TOTAL A RECEBER</span>
               <span className="font-bold text-xl text-primary">
-                R$ {(((inspection.kmDeslocamento || 0) * (inspection.valorKm || 0)) + (inspection.pedagio || 0) + (inspection.autoAvaliar || 0) + (inspection.caltelar || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                R$ {Number(((inspection.kmDeslocamento || 0) * (inspection.valorKm || 0)) + (inspection.pedagio || 0) + (inspection.autoAvaliar || 0) + (inspection.caltelar || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </span>
             </div>
           </div>
