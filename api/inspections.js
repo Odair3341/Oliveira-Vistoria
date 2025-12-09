@@ -3,45 +3,42 @@ import query from './db.js';
 export default async function handler(req, res) {
   try {
     const mapRow = (row) => {
-        const kmd = Number(row.km_deslocamento) || 0;
-        const vk = Number(row.valor_km) || 0;
-        const ped = Number(row.pedagio) || 0;
-        const aa = Number(row.auto_avaliar) || 0;
-        const ca = Number(row.caltelar) || 0;
-        const computedTotal = (kmd * vk) + ped + aa + ca;
+        // Campos calculados agora são baseados no que existe no DB
+        // ou definidos como 0 se as colunas não existirem.
+        const computedTotal = Number(row.valor_total) || 0;
         return ({
         id: String(row.id),
         qtd: 1, // Default
         placa: row.placa,
         kmRodado: Number(row.km_rodado) || 0,
-        kmDeslocamento: Number(row.km_deslocamento) || 0,
-        valorKm: Number(row.valor_km) || 0,
+        kmDeslocamento: 0, // Coluna não existe no schema
+        valorKm: 0, // Coluna não existe no schema
         ano: row.ano_veiculo,
         modelo: row.modelo,
         marca: row.marca,
         filial: row.filial_nome,
         empresa: row.empresa,
         estado: row.estado_uf,
-        origem: row.origem || '',
-        destino: row.destino || '',
-        autoAvaliar: Number(row.auto_avaliar) || 0,
-        caltelar: Number(row.caltelar) || 0,
-        pedagio: Number(row.pedagio) || 0,
+        origem: '', // Coluna não existe no schema
+        destino: '', // Coluna não existe no schema
+        autoAvaliar: 0, // Coluna não existe no schema
+        caltelar: 0, // Coluna não existe no schema
+        pedagio: 0, // Coluna não existe no schema
         total: computedTotal,
         dataVistoria: row.data_vistoria ? new Date(row.data_vistoria).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
         status: row.status,
         veiculoId: row.veiculo_id,
-        items: row.items || []
+        items: row.items || [] // Supondo que 'items' não está no schema, mas pode vir de lógica futura
     });
   };
 
     if (req.method === 'GET') {
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      // Query corrigida para usar apenas colunas existentes no schema.sql
       const queryText = `
         SELECT 
-          id, placa, km_rodado, km_deslocamento, valor_km, ano_veiculo, modelo, marca, 
-          filial_nome, empresa, estado_uf, origem, destino, auto_avaliar, caltelar, 
-          pedagio, data_vistoria, status, veiculo_id, items 
+          id, veiculo_id, usuario_id, placa, marca, modelo, empresa, filial_nome, 
+          estado_uf, data_vistoria, km_rodado, ano_veiculo, valor_total, status, descricao
         FROM vistorias 
         ORDER BY data_vistoria DESC
       `;
