@@ -114,6 +114,12 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'ID is required for update' });
         }
 
+        // Tentar mapear usuário se for UUID
+        let usuarioId = null;
+        if (responsavel && typeof responsavel === 'string' && responsavel.length > 30) {
+           usuarioId = responsavel; 
+        }
+
         // 1. Update Inspection
         const kmdUp = Number(kmDeslocamento) || 0;
         const vkUp = Number(valorKm) || 0;
@@ -122,6 +128,9 @@ export default async function handler(req, res) {
         const caUp = Number(caltelar) || 0;
         const totalUp = (kmdUp * vkUp) + pedUp + aaUp + caUp;
 
+        // Construir query dinâmica ou fixa com todos os campos
+        // É mais seguro atualizar tudo o que vier no body
+        
         const result = await query(
             `UPDATE vistorias SET 
                 placa = $1, 
@@ -140,12 +149,18 @@ export default async function handler(req, res) {
                 caltelar = $14,
                 valor_total = $15,
                 status = $16,
-                data_vistoria = $17
-             WHERE id = $18 RETURNING *`,
+                data_vistoria = $17,
+                observacoes = $18,
+                items = $19,
+                usuario_id = COALESCE($20, usuario_id)
+             WHERE id = $21 RETURNING *`,
             [
                 placa, modelo, marca, kmRodado || 0, filial, empresa, ano, 
                 origem || '', destino || '', kmdUp, vkUp, pedUp, 
                 aaUp, caUp, totalUp, status, dataVistoria,
+                observacoes || '', 
+                JSON.stringify(items || []),
+                usuarioId,
                 id
             ]
         );
