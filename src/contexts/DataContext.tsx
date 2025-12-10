@@ -236,14 +236,44 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     }
   };
   
-  const updateUser = (user: User) => {
-    const list = users.map(u => u.id === user.id ? user : u);
-    setUsers(list);
-    try { localStorage.setItem('oliveira_users_v2', JSON.stringify(list)); } catch {}
-    // Se atualizar o usuário atual, refletir
-    if (currentUser && currentUser.id === user.id) {
-      setCurrentUserState(user);
-      try { localStorage.setItem('oliveira_current_user_v2', JSON.stringify(user)); } catch {}
+  const updateUser = async (user: User) => {
+    try {
+        const res = await fetch('/api/users', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(user)
+        });
+
+        if (res.ok) {
+            const saved = await res.json();
+            const list = users.map(u => u.id === user.id ? saved : u);
+            setUsers(list);
+            try { localStorage.setItem('oliveira_users_v2', JSON.stringify(list)); } catch {}
+            
+            // Se atualizar o usuário atual, refletir
+            if (currentUser && currentUser.id === user.id) {
+              setCurrentUserState(saved);
+              try { localStorage.setItem('oliveira_current_user_v2', JSON.stringify(saved)); } catch {}
+            }
+        } else {
+            // Fallback local se falhar
+            const list = users.map(u => u.id === user.id ? user : u);
+            setUsers(list);
+            try { localStorage.setItem('oliveira_users_v2', JSON.stringify(list)); } catch {}
+            if (currentUser && currentUser.id === user.id) {
+              setCurrentUserState(user);
+              try { localStorage.setItem('oliveira_current_user_v2', JSON.stringify(user)); } catch {}
+            }
+        }
+    } catch(e) {
+        // Fallback local
+        const list = users.map(u => u.id === user.id ? user : u);
+        setUsers(list);
+        try { localStorage.setItem('oliveira_users_v2', JSON.stringify(list)); } catch {}
+        if (currentUser && currentUser.id === user.id) {
+          setCurrentUserState(user);
+          try { localStorage.setItem('oliveira_current_user_v2', JSON.stringify(user)); } catch {}
+        }
     }
   };
   const deleteUser = (userName: string) => {
